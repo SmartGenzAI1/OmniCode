@@ -1,6 +1,27 @@
 # OmniCode // Sovereign Public Codebase Meta-Forge
 
-> The autonomous meta-forge indexing all public open-source software with sub-millisecond AST symbol search, polyglot algorithm comparator, and free cloud database synchronization.
+<div align="center">
+
+[![Live Demo](https://img.shields.io/badge/Live%20Demo-omni--code--ten.vercel.app-00ADD8?style=for-the-badge&logo=vercel&logoColor=white)](https://omni-code-ten.vercel.app/)
+[![Buy Me a Coffee](https://img.shields.io/badge/☕%20Buy%20Me%20A%20Coffee-Razorpay-FF813F?style=for-the-badge&logo=razorpay&logoColor=white)](https://razorpay.me/@CodeChap)
+[![GitHub Repo](https://img.shields.io/badge/GitHub-SmartGenzAI1%2FOmniCode-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/SmartGenzAI1/OmniCode)
+[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg?style=for-the-badge)](https://opensource.org/licenses/MIT)
+
+**Autonomous public codebase indexer, universal AST symbol analyzer, and polyglot code studio with sub-millisecond search and Obsidian-style neural universe cluster graphs.**
+
+[🌐 Explore Live Application](https://omni-code-ten.vercel.app/) • [☕ Support Developer (Razorpay)](https://razorpay.me/@CodeChap) • [⭐ Star on GitHub](https://github.com/SmartGenzAI1/OmniCode)
+
+</div>
+
+---
+
+## ☕ Support & Sponsorship
+
+If you find OmniCode useful or want to support ongoing open-source development, consider buying me a coffee:
+
+[![Buy Me a Coffee](https://img.shields.io/badge/Support%20Project-Buy%20Me%20A%20Coffee%20%E2%98%95-orange?style=for-the-badge&logo=razorpay)](https://razorpay.me/@CodeChap)
+
+👉 **[https://razorpay.me/@CodeChap](https://razorpay.me/@CodeChap)**
 
 ---
 
@@ -8,24 +29,21 @@
 
 OmniCode is configured for instant Vercel Serverless deployment with `@vercel/node` and dynamic edge routing.
 
-### Step 1: Push to GitHub
+### Step 1: Clone or Fork
 ```bash
-git init
-git add .
-git commit -m "Deploy OmniCode to Vercel"
-git remote add origin https://github.com/your-username/omnicode.git
-git push -u origin main
+git clone https://github.com/SmartGenzAI1/OmniCode.git
+cd OmniCode
 ```
 
 ### Step 2: Import on Vercel
-1. Go to **[https://vercel.com/new](https://vercel.com/new)** and import your `omnicode` GitHub repo.
-2. Under **Environment Variables**, add:
+1. Go to **[https://vercel.com/new](https://vercel.com/new)** and import your `SmartGenzAI1/OmniCode` GitHub repo.
+2. *(Optional for persistence)* Under **Environment Variables**, add:
    ```env
    DATABASE_URL="postgresql://user:password@ep-xyz.us-east-2.aws.neon.tech/neondb?sslmode=require"
    ```
-   *(Get your free PostgreSQL database URL in 10 seconds at [neon.tech](https://neon.tech) with temp mail)*
+   *(Get your free cloud PostgreSQL database in seconds at [neon.tech](https://neon.tech) or [supabase.com](https://supabase.com))*
 3. Click **Deploy**!
-4. OmniCode will deploy automatically on your free Vercel `.vercel.app` domain with SSL and auto-sync to Neon PostgreSQL on boot.
+4. OmniCode will deploy on your free Vercel domain (e.g. `https://omni-code-ten.vercel.app/`).
 
 ---
 
@@ -33,14 +51,15 @@ git push -u origin main
 
 - **🔍 Global AST Symbol Search**: Search across thousands of codebases for functions, classes, structs, traits, and interfaces with instant line jumping in Code Studio.
 - **🛡️ Static Security & Code Health Scan**: Instant maintainability index, cyclomatic complexity density, and SPDX license audit.
+- **🪐 Obsidian Neural Universe Cluster**: Real-time force-directed physics graph with spatial hashing ($O(N)$), interactive orbital gravity, and language color-coded hubs.
 - **💾 Dual Storage Architecture**:
-  - **Local Sovereign Engine**: Zero-setup Write-Ahead Log (WAL) + LSM partition chunks in `omni_data/`.
-  - **Free Cloud Database Integration**: 1-click connect to Neon PostgreSQL, Supabase, or Render.
+  - **In-Memory Sovereign Engine**: Zero-setup Write-Ahead Log (WAL) with multi-partition disk persistence.
+  - **Cloud Database Integration**: Auto-synchronization to Neon PostgreSQL, Supabase, or Render.
 - **🌐 Automated Search Engine Indexing (Google / Bing / DuckDuckGo)**:
-  - Dynamic **`/sitemap.xml`** with 2,300+ indexed codebases.
-  - Pre-configured **`/robots.txt`** for maximum organic search traffic.
-  - Embedded **Schema.org JSON-LD** for Google rich search snippets.
-- **🎨 High-Density Developer UI/UX**: Carbon Slate HSL palette, dark theme, Grid & Dense List view modes, `⌘K` command palette, 100% clean SVG developer icons.
+  - Dynamic **[`/sitemap.xml`](https://omni-code-ten.vercel.app/sitemap.xml)** with crawlable repository and language URLs.
+  - Pre-configured **[`/robots.txt`](https://omni-code-ten.vercel.app/robots.txt)**.
+  - Server-Side Rendering (SSR) for search engine bots with OpenGraph cards & Schema.org JSON-LD structured data.
+- **🎨 Modern Developer UI/UX**: Carbon Slate HSL palette, dark theme, Grid & Dense List view modes, `⌘K` command palette, toast notification system, 100% clean SVG developer icons.
 
 ---
 
@@ -50,7 +69,7 @@ git push -u origin main
 # Install dependencies
 npm install
 
-# Start server
+# Start development server
 npm start
 ```
 Open **[http://localhost:3000](http://localhost:3000)** in your browser.

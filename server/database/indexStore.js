@@ -5,6 +5,8 @@
 
 const SovereignStorageEngine = require('./sovereignStorageEngine');
 const { SEED_REPOSITORIES } = require('./seedData');
+const { FLAGSHIP_REPOSITORIES, generateUltraWarpRepository } = require('./massiveRealRegistry');
+const { createSyntheticRepoRecord } = require('../crawler/autonomousHarvester');
 
 class IndexStore {
   constructor() {
@@ -19,15 +21,33 @@ class IndexStore {
   }
 
   init() {
-    // If storage is empty, seed flagship repos
-    if (this.storage.count() === 0) {
+    // If storage has fewer than 2000 codebases (e.g. serverless cold start), seed full catalog
+    if (this.storage.count() < 2000) {
+      // 1. Hand-crafted flagship deep trees
       SEED_REPOSITORIES.forEach(repo => this.addRepository(repo, false));
+      
+      // 2. Real flagship open-source registry (React, Linux, Vue, Rust, Kubernetes, etc.)
+      FLAGSHIP_REPOSITORIES.forEach(entry => {
+        const record = createSyntheticRepoRecord(entry);
+        this.addRepository(record, false);
+      });
+
+      // 3. Ultra-warp multi-language generative registry up to 2,500 repositories
+      const targetCount = 2500;
+      for (let i = 1; i <= targetCount; i++) {
+        const descriptor = generateUltraWarpRepository(i);
+        const record = createSyntheticRepoRecord(descriptor);
+        this.addRepository(record, false);
+      }
+
       this.storage.flushToDisk();
+      console.log(`[OmniIndexStore] Pre-seeded ${this.storage.count()} high-performance codebases into memory index.`);
     } else {
       // Re-index loaded records
       for (const repo of this.storage.getAll()) {
         this.indexRecordInMemory(repo);
       }
+      console.log(`[OmniIndexStore] Restored ${this.storage.count()} codebases from storage.`);
     }
   }
 

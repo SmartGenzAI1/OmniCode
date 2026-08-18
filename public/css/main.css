@@ -271,6 +271,67 @@ html, body {
   box-shadow: 0 1px 6px rgba(255, 255, 255, 0.15);
 }
 
+/* Attractive Buy Me a Coffee Button */
+.btn-coffee-sponsor {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 11px;
+  background: linear-gradient(135deg, hsl(38, 95%, 52%), hsl(28, 98%, 46%));
+  color: #0d1117;
+  border: 1px solid hsl(38, 92%, 58%);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-sans);
+  font-size: 11.5px;
+  font-weight: 700;
+  text-decoration: none;
+  cursor: pointer;
+  box-shadow: 0 2px 10px hsla(38, 95%, 50%, 0.3);
+  transition: all var(--transition-fast);
+  white-space: nowrap;
+}
+
+.btn-coffee-sponsor:hover {
+  background: linear-gradient(135deg, hsl(38, 98%, 56%), hsl(28, 100%, 50%));
+  box-shadow: 0 4px 16px hsla(38, 95%, 50%, 0.48);
+  transform: translateY(-1px);
+  color: #000000;
+}
+
+.btn-coffee-sponsor svg {
+  stroke: #0d1117;
+  stroke-width: 2.2;
+}
+
+/* Sleek GitHub Link Button */
+.btn-github-nav {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 10px;
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-medium);
+  border-radius: var(--radius-sm);
+  color: var(--text-secondary);
+  font-family: var(--font-sans);
+  font-size: 11.5px;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  white-space: nowrap;
+}
+
+.btn-github-nav:hover {
+  color: var(--text-primary);
+  border-color: var(--border-active);
+  background-color: var(--bg-surface);
+}
+
+.btn-github-nav svg {
+  fill: currentColor;
+}
+
 /* Workspace Panels */
 .omni-workspace {
   flex: 1;
@@ -693,6 +754,14 @@ input:focus-visible, select:focus-visible {
 @media (max-width: 900px) {
   .topbar-right .kbd-tag {
     display: none;
+  }
+
+  .btn-coffee-sponsor span, .btn-github-nav span {
+    display: none;
+  }
+
+  .btn-coffee-sponsor, .btn-github-nav {
+    padding: 5px 8px;
   }
 
   .desktop-tabs {

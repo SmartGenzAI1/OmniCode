@@ -114,16 +114,24 @@ const LANGUAGES = [
   { name: 'Crystal', license: 'Apache-2.0' }
 ];
 
+const MODIFIERS = [
+  'core', 'engine', 'mesh', 'stream', 'stack', 'kit', 'sync', 'flow',
+  'grid', 'hub', 'box', 'node', 'link', 'forge', 'nexus', 'craft'
+];
+
 /**
  * Rapidly synthesizes realistic public codebase descriptors for ultra-high throughput indexing
  */
 function generateUltraWarpRepository(index) {
   const org = ORG_PREFIXES[index % ORG_PREFIXES.length];
-  const mod = MODULE_NAMES[(index * 7) % MODULE_NAMES.length];
+  const mod = MODULE_NAMES[Math.floor(index / ORG_PREFIXES.length) % MODULE_NAMES.length];
+  const modifier = MODIFIERS[Math.floor(index / (ORG_PREFIXES.length * MODULE_NAMES.length)) % MODIFIERS.length];
+  const tag = Math.floor(index / (ORG_PREFIXES.length * MODULE_NAMES.length * MODIFIERS.length));
+  
+  const repoName = tag > 0 ? `${org}-${mod}-${modifier}-${tag}` : `${org}-${mod}-${modifier}`;
+  const owner = `${org}-labs`;
   const langObj = LANGUAGES[index % LANGUAGES.length];
   const domain = DOMAINS[(index * 3) % DOMAINS.length];
-  const repoName = `${org}-${mod}`;
-  const owner = `${org}-labs`;
   const stars = Math.floor(Math.abs(Math.sin(index * 123.45)) * 48000) + 120;
   const forks = Math.floor(stars * 0.18) + 10;
 
@@ -135,7 +143,7 @@ function generateUltraWarpRepository(index) {
     stars,
     forks,
     license: langObj.license,
-    desc: `High-performance sovereign ${langObj.name} ${mod} for ${domain.toLowerCase()} architectures.`
+    desc: `High-performance sovereign ${langObj.name} ${mod} ${modifier} for ${domain.toLowerCase()} architectures.`
   };
 }
 
