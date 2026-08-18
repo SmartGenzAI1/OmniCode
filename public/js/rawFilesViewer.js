@@ -199,13 +199,24 @@ class OmniRawFilesViewer {
       
       const icon = this.getFileIcon(f.language, f.name);
       const sizeKb = (f.size / 1024).toFixed(1);
+      const owner = f.owner || (f.repoFullName ? f.repoFullName.split('/')[0] : 'developer');
+      const avatarUrl = f.ownerAvatar || `https://github.com/${owner}.png?size=64`;
 
       card.innerHTML = `
         <div class="raw-card-top">
-          ${icon}
+          <div class="raw-avatar-group">
+            <img src="${avatarUrl}" class="raw-owner-avatar" alt="${owner}" onerror="this.src='https://github.com/github.png?size=64'" title="Owner: @${owner}">
+            <div class="raw-icon-badge">${icon}</div>
+          </div>
           <div class="raw-card-info">
-            <span class="raw-card-name" title="${f.path}">${f.name}</span>
-            <span class="raw-card-repo" title="Repository: ${f.repoFullName}">🏛️ ${f.repoFullName}</span>
+            <div class="raw-header-row">
+              <span class="raw-card-name" title="${f.path}">${f.name}</span>
+            </div>
+            <div class="raw-owner-row" title="Project: ${f.repoFullName}">
+              <span class="raw-owner-handle">@${owner}</span>
+              <span class="raw-slash">/</span>
+              <strong class="raw-project-name">${f.repoName}</strong>
+            </div>
           </div>
         </div>
 
@@ -215,7 +226,7 @@ class OmniRawFilesViewer {
           <span class="raw-tag lang-tag">${f.language}</span>
           <span class="raw-tag">${f.totalLines} lines</span>
           <span class="raw-tag">${sizeKb} KB</span>
-          <span class="raw-tag">★ ${(f.repoStars || 0).toLocaleString()}</span>
+          <span class="raw-tag stars-tag">★ ${(f.repoStars || 0).toLocaleString()}</span>
         </div>
 
         <div class="raw-card-actions">
@@ -316,17 +327,26 @@ class OmniRawFilesViewer {
     this.activeFile = file;
     if (!this.dom.previewModal) return;
 
+    const owner = file.owner || (file.repoFullName ? file.repoFullName.split('/')[0] : 'developer');
+    const avatarUrl = file.ownerAvatar || `https://github.com/${owner}.png?size=64`;
+
     if (this.dom.previewTitle) {
-      this.dom.previewTitle.textContent = `${file.name} — ${file.repoFullName}`;
+      this.dom.previewTitle.innerHTML = `
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <img src="${avatarUrl}" style="width: 22px; height: 22px; border-radius: 50%; border: 1px solid var(--border-subtle);" onerror="this.src='https://github.com/github.png?size=64'">
+          <span>${file.name} — <strong style="color: var(--accent-cyan);">${file.repoFullName}</strong></span>
+        </div>
+      `;
     }
 
     if (this.dom.previewMeta) {
       this.dom.previewMeta.innerHTML = `
-        <span class="meta-pill">${file.language}</span>
+        <span class="meta-pill" style="font-weight: 700; color: var(--accent-cyan);">${file.language}</span>
         <span class="meta-pill">${file.totalLines} Lines</span>
         <span class="meta-pill">${(file.size / 1024).toFixed(1)} KB</span>
-        <span class="meta-pill">Complexity: ${file.complexity}</span>
+        <span class="meta-pill">★ ${(file.repoStars || 0).toLocaleString()} Stars</span>
         <span class="meta-pill">Path: ${file.path}</span>
+        <a href="${file.projectUrl || `https://github.com/${file.repoFullName}`}" target="_blank" rel="noopener noreferrer" class="meta-pill" style="color: var(--accent-emerald); text-decoration: none;">↗ View Repository</a>
       `;
     }
 

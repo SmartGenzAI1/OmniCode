@@ -331,6 +331,12 @@ module.exports = function createFeaturesRouter(indexStore) {
               continue;
             }
           }
+          const fullName = r.fullName || r.name || 'unknown';
+          const owner = fullName.includes('/') ? fullName.split('/')[0] : (r.owner || 'github');
+          const repoOnly = fullName.includes('/') ? fullName.split('/')[1] : (r.name || 'project');
+          const avatarUrl = `https://github.com/${owner}.png?size=64`;
+          const projectUrl = r.gitUrl || `https://github.com/${fullName}`;
+
           allFiles.push({
             name: file.name || file.path.split('/').pop(),
             path: file.path,
@@ -342,10 +348,15 @@ module.exports = function createFeaturesRouter(indexStore) {
             complexity: file.complexity || 1,
             symbolsCount: Array.isArray(file.symbols) ? file.symbols.length : 0,
             repoId: r.id,
-            repoName: r.name,
-            repoFullName: r.fullName,
+            repoName: repoOnly,
+            repoFullName: fullName,
+            owner: owner,
+            ownerAvatar: avatarUrl,
+            projectUrl: projectUrl,
             repoStars: r.stars || 0,
             repoLanguage: r.primaryLanguage || 'Other',
+            repoDomain: r.domain || 'Systems',
+            repoLicense: r.license || 'MIT',
             content: file.content || ''
           });
         }

@@ -946,6 +946,45 @@ input:focus-visible, select:focus-visible {
   gap: 10px;
 }
 
+.raw-avatar-group {
+  position: relative;
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+}
+
+.raw-owner-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  border: 1px solid var(--border-medium);
+  background-color: var(--bg-surface);
+  object-fit: cover;
+}
+
+.raw-icon-badge {
+  position: absolute;
+  bottom: -4px;
+  right: -4px;
+  width: 16px;
+  height: 16px;
+  border-radius: 3px;
+  background-color: #0b0f19;
+  border: 1px solid var(--border-medium);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 8px;
+}
+
+.raw-icon-badge .file-brand-icon {
+  width: 14px;
+  height: 14px;
+  font-size: 7px;
+  border: none;
+  background: transparent;
+}
+
 .file-brand-icon {
   width: 28px;
   height: 28px;
@@ -979,6 +1018,13 @@ input:focus-visible, select:focus-visible {
   flex: 1;
 }
 
+.raw-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+}
+
 .raw-card-name {
   font-size: 13px;
   font-weight: 700;
@@ -989,12 +1035,28 @@ input:focus-visible, select:focus-visible {
   font-family: var(--font-mono);
 }
 
-.raw-card-repo {
+.raw-owner-row {
+  display: flex;
+  align-items: center;
+  gap: 3px;
   font-size: 11px;
   color: var(--text-secondary);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+.raw-owner-handle {
+  color: var(--text-muted);
+}
+
+.raw-slash {
+  color: var(--text-faint);
+}
+
+.raw-project-name {
+  color: var(--accent-cyan);
+  font-weight: 700;
 }
 
 .raw-card-path {
