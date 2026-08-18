@@ -110,6 +110,10 @@
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="6" cy="6" r="3"></circle><circle cx="18" cy="18" r="3"></circle><circle cx="6" cy="18" r="3"></circle><line x1="6" y1="9" x2="6" y2="15"></line><line x1="8.5" y1="7.5" x2="15.5" y2="15.5"></line></svg>
             <span>Obsidian Cluster</span>
           </button>
+          <button class="tab-btn" data-tab="rawfiles" id="tab-btn-rawfiles" role="tab" aria-selected="false">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path><polyline points="13 2 13 9 20 9"></polyline></svg>
+            <span>Raw Files</span>
+          </button>
           <button class="tab-btn" data-tab="crawler" id="tab-btn-crawler" role="tab" aria-selected="false">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line></svg>
             <span>Harvester</span>
@@ -177,6 +181,10 @@
           <button class="mobile-nav-item" data-tab="graph">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="6" cy="6" r="3"></circle><circle cx="18" cy="18" r="3"></circle><circle cx="6" cy="18" r="3"></circle><line x1="6" y1="9" x2="6" y2="15"></line><line x1="8.5" y1="7.5" x2="15.5" y2="15.5"></line></svg>
             <span>Obsidian Cluster Graph</span>
+          </button>
+          <button class="mobile-nav-item" data-tab="rawfiles">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path><polyline points="13 2 13 9 20 9"></polyline></svg>
+            <span>Raw Files & Tree Catalog</span>
           </button>
           <button class="mobile-nav-item" data-tab="crawler">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line></svg>
@@ -604,6 +612,50 @@
         </div>
       </section>
 
+      <!-- ================= 7. GLOBAL RAW FILES & TREE CATALOG ================= -->
+      <section class="tab-pane" id="pane-rawfiles">
+        <div class="rawfiles-workspace">
+          
+          <!-- Top Filter Toolbar -->
+          <div class="rawfiles-toolbar">
+            <div class="rawfiles-toolbar-left">
+              <input type="text" id="rawfiles-search-input" placeholder="Search across 100,000+ indexed files (*.rs, scheduler.go, CMakeLists.txt)..." class="omni-input" style="flex: 1; min-width: 220px;">
+              
+              <select id="rawfiles-lang-select" class="omni-select-mini" style="font-weight: 600;">
+                <option value="">All Languages</option>
+                <option value="Rust">Rust (🦀)</option>
+                <option value="Go">Go (🐹)</option>
+                <option value="TypeScript">TypeScript (TS)</option>
+                <option value="Python">Python (🐍)</option>
+                <option value="JavaScript">JavaScript (JS)</option>
+                <option value="C++">C++ (C++)</option>
+                <option value="C">C (C)</option>
+                <option value="Zig">Zig (⚡)</option>
+                <option value="Solidity">Solidity (💎)</option>
+                <option value="Markdown">Markdown (📝)</option>
+              </select>
+
+              <select id="rawfiles-repo-select" class="omni-select-mini" style="max-width: 220px;">
+                <option value="">All Repositories (2,500+)</option>
+              </select>
+            </div>
+
+            <div class="rawfiles-toolbar-right">
+              <span class="stream-match-count" id="rawfiles-total-badge">0 Files</span>
+            </div>
+          </div>
+
+          <!-- Files Grid Scroll Area -->
+          <div class="rawfiles-scroll-body">
+            <div class="rawfiles-grid-container" id="rawfiles-grid-container">
+              <!-- Dynamically rendered -->
+            </div>
+            
+            <div id="rawfiles-pagination"></div>
+          </div>
+        </div>
+      </section>
+
     </main>
 
     <!-- MODAL: Command Palette (Ctrl+K) -->
@@ -664,6 +716,26 @@
       </div>
     </div>
 
+    <!-- MODAL: Raw File Inspector & Code Preview -->
+    <div class="modal-overlay" id="raw-preview-modal-overlay" style="display: none;">
+      <div class="modal-dialog" style="max-width: 880px; max-height: 85vh; display: flex; flex-direction: column;">
+        <div class="modal-header">
+          <h3 id="raw-preview-title" style="font-family: var(--font-mono); font-size: 13px; font-weight: 700;">File Inspector</h3>
+          <button class="btn-modal-close" id="btn-close-raw-preview">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+          </button>
+        </div>
+        <div class="modal-body" style="overflow: hidden; display: flex; flex-direction: column; gap: 10px; flex: 1;">
+          <div id="raw-preview-meta" style="display: flex; gap: 6px; flex-wrap: wrap;"></div>
+          <pre class="raw-code-pre" id="raw-preview-code" style="flex: 1;"></pre>
+          <div class="modal-footer" style="padding-top: 10px; border-top: 1px solid var(--border-subtle); display: flex; justify-content: flex-end; gap: 8px;">
+            <button class="btn-secondary" id="btn-copy-raw-file">📋 Copy Raw Code</button>
+            <button class="btn-primary-action" id="btn-open-in-studio">⚡ Open in Code Studio</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- Toast Notification Container -->
     <div id="toast-container" class="toast-container" aria-live="polite" aria-atomic="true"></div>
   </div>
@@ -674,6 +746,7 @@
   <script src="js/comparator.js"></script>
   <script src="js/graphVisualizer.js"></script>
   <script src="js/crawlerConsole.js"></script>
+  <script src="js/rawFilesViewer.js"></script>
   <script src="js/app.js"></script>
   <script>
     // Dynamic SEO: Set canonical & OG URLs to actual deployed domain

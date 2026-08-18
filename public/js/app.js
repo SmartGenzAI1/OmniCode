@@ -29,6 +29,7 @@ class OmniApp {
     this.comparator = new OmniComparator();
     this.graphVisualizer = new OmniGraphVisualizer();
     this.crawlerConsole = new OmniCrawlerConsole();
+    this.rawFilesViewer = new OmniRawFilesViewer();
 
     // DOM Elements
     this.dom = {
@@ -496,6 +497,15 @@ class OmniApp {
         this.graphVisualizer.resize();
         this.graphVisualizer.centerGraph();
       }, 60);
+    } else if (tabName === 'rawfiles') {
+      if (this.rawFilesViewer) {
+        this.rawFilesViewer.populateRepoOptions(this.repositories);
+        this.rawFilesViewer.fetchFiles();
+      }
+    } else if (tabName === 'crawler') {
+      if (this.crawlerConsole) {
+        this.crawlerConsole.fetchInitialStats();
+      }
     }
   }
 
@@ -652,6 +662,10 @@ class OmniApp {
 
     if (currentViewerVal) this.dom.viewerRepoSelect.value = currentViewerVal;
     if (currentGraphVal) this.dom.graphRepoSelect.value = currentGraphVal;
+
+    if (this.rawFilesViewer) {
+      this.rawFilesViewer.populateRepoOptions(this.repositories);
+    }
   }
 
   loadMoreCards() {

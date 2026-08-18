@@ -276,5 +276,68 @@ module.exports = function createFeaturesRouter(indexStore) {
     res.send(md);
   });
 
+  // 8. Global Raw Files & Tree Catalog Across All Repositories
+  router.get('/raw-files', (req, res) => {
+    const { q = '', language = '', repo = '', page = 1, limit = 40 } = req.query;
+    const pageNum = Math.max(1, parseInt(page, 10) || 1);
+    const limitNum = Math.min(100, Math.max(10, parseInt(limit, 10) || 40));
+    const query = (q || '').toLowerCase().trim();
+    const langFilter = (language || '').toLowerCase().trim();
+    const repoFilter = (repo || '').toLowerCase().trim();
+
+    const allRepos = indexStore.getAllRepositories() || [];
+    let allFiles = [];
+
+    for (const r of allRepos) {
+      if (repoFilter && !((r.fullName || '').toLowerCase().includes(repoFilter) || (r.name || '').toLowerCase().includes(repoFilter) || (r.id || '').toLowerCase().includes(repoFilter))) {
+        continue;
+      }
+      if (Array.isArray(r.files)) {
+        for (const file of r.files) {
+          if (langFilter && (file.language || '').toLowerCase() !== langFilter) {
+            continue;
+          }
+          if (query) {
+            const matchName = (file.name || '').toLowerCase().includes(query);
+            const matchPath = (file.path || '').toLowerCase().includes(query);
+            const matchContent = typeof file.content === 'string' && file.content.toLowerCase().includes(query);
+            if (!matchName && !matchPath && !matchContent) {
+              continue;
+            }
+          }
+          allFiles.push({
+            name: file.name || file.path.split('/').pop(),
+            path: file.path,
+            language: file.language || 'Plain Text',
+            size: file.size || (file.content ? file.content.length : 0),
+            totalLines: file.totalLines || (file.content ? file.content.split('\n').length : 0),
+            codeLines: file.codeLines || 0,
+            commentLines: file.commentLines || 0,
+            complexity: file.complexity || 1,
+            symbolsCount: Array.isArray(file.symbols) ? file.symbols.length : 0,
+            repoId: r.id,
+            repoName: r.name,
+            repoFullName: r.fullName,
+            repoStars: r.stars || 0,
+            repoLanguage: r.primaryLanguage || 'Other',
+            content: file.content || ''
+          });
+        }
+      }
+    }
+
+    const total = allFiles.length;
+    const startIndex = (pageNum - 1) * limitNum;
+    const paginated = allFiles.slice(startIndex, startIndex + limitNum);
+
+    res.json({
+      total,
+      page: pageNum,
+      limit: limitNum,
+      totalPages: Math.ceil(total / limitNum) || 1,
+      files: paginated
+    });
+  });
+
   return router;
 };
