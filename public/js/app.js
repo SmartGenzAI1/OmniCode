@@ -478,7 +478,18 @@ class OmniApp {
       const type = this.dom.symbolTypeFilter.value;
       if (!q) return;
 
-      this.dom.symbolsResultsContainer.innerHTML = '<div style="grid-column: 1 / -1; padding: 40px; text-align: center; color: var(--accent-cyan);">Searching AST symbol graph across thousands of codebases...</div>';
+      this.dom.symbolsResultsContainer.innerHTML = `
+        <div class="omni-wave-loader">
+          <div class="wave-bars-track">
+            <div class="wave-bar"></div>
+            <div class="wave-bar"></div>
+            <div class="wave-bar"></div>
+            <div class="wave-bar"></div>
+            <div class="wave-bar"></div>
+          </div>
+          <span class="wave-loader-caption">Synthesizing AST symbol graph...</span>
+        </div>
+      `;
 
       try {
         const res = await fetch(`/api/features/symbols?q=${encodeURIComponent(q)}&type=${encodeURIComponent(type)}`);
@@ -533,7 +544,18 @@ class OmniApp {
         if (!repo) return this.showToast('Please select a repository in Code Studio first', 'error');
 
         this.dom.securityModalOverlay.style.display = 'flex';
-        this.dom.securityModalBody.innerHTML = '<div style="padding: 20px; text-align: center; color: var(--text-muted);">Running static security & complexity analysis...</div>';
+        this.dom.securityModalBody.innerHTML = `
+          <div class="omni-wave-loader" style="padding: 30px 10px;">
+            <div class="wave-bars-track">
+              <div class="wave-bar"></div>
+              <div class="wave-bar"></div>
+              <div class="wave-bar"></div>
+              <div class="wave-bar"></div>
+              <div class="wave-bar"></div>
+            </div>
+            <span class="wave-loader-caption">Running deep static security & complexity audit...</span>
+          </div>
+        `;
 
         try {
           const res = await fetch(`/api/features/repos/${repo.id}/security-scan`);

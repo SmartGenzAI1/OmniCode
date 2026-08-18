@@ -111,9 +111,15 @@ class OmniRawFilesViewer {
     if (!this.dom.filesContainer) return;
 
     this.dom.filesContainer.innerHTML = `
-      <div style="grid-column: 1 / -1; padding: 40px; text-align: center; color: var(--text-muted);">
-        <div style="font-size: 20px; margin-bottom: 8px;">⚡</div>
-        <div>Streaming raw file catalog across all codebases...</div>
+      <div class="omni-wave-loader">
+        <div class="wave-bars-track">
+          <div class="wave-bar"></div>
+          <div class="wave-bar"></div>
+          <div class="wave-bar"></div>
+          <div class="wave-bar"></div>
+          <div class="wave-bar"></div>
+        </div>
+        <span class="wave-loader-caption">Streaming raw source files...</span>
       </div>
     `;
 
