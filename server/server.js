@@ -59,24 +59,34 @@ setInterval(() => {
 const indexStore = new OmniIndexStore();
 const crawlerDaemon = new CrawlerDaemon(indexStore);
 
-// Two-Way Synchronization with Cloud PostgreSQL (Neon / Supabase)
-if (process.env.DATABASE_URL) {
-  universalDb.connect(process.env.DATABASE_URL).then(async () => {
-    // 1. Restore any persistent repositories already in Neon PostgreSQL
-    const cloudRepos = await universalDb.fetchAllRepositories(50000);
-    if (cloudRepos.length > 0) {
-      cloudRepos.forEach(r => indexStore.addRepository(r, false));
-      console.log(`[CloudDB] Successfully restored and indexed ${cloudRepos.length} persistent repositories from Neon PostgreSQL.`);
-    } else {
-      // 2. First boot: Initialize and sync the full initial catalog to Neon
-      const all = indexStore.getAllRepositories();
-      const res = await universalDb.syncRepositories(all);
-      console.log(`[CloudDB] First boot: Initialized ${res?.synced || 0} repositories into Neon Database.`);
-    }
-  }).catch(err => {
-    console.warn(`[CloudDB] Cloud DB connection note: ${err.message}`);
-  });
+let dbInitPromise = null;
+function ensureDbRestored() {
+  if (!process.env.DATABASE_URL) return Promise.resolve();
+  if (!dbInitPromise) {
+    dbInitPromise = (async () => {
+      try {
+        if (!universalDb.isConnected) {
+          await universalDb.connect(process.env.DATABASE_URL);
+        }
+        const cloudRepos = await universalDb.fetchAllRepositories(50000);
+        if (cloudRepos && cloudRepos.length > 0) {
+          cloudRepos.forEach(r => indexStore.addRepository(r, false));
+          console.log(`[CloudDB] Successfully restored and indexed ${cloudRepos.length} persistent repositories from Neon PostgreSQL.`);
+        } else {
+          const all = indexStore.getAllRepositories();
+          const res = await universalDb.syncRepositories(all);
+          console.log(`[CloudDB] First boot: Initialized ${res?.synced || 0} repositories into Neon Database.`);
+        }
+      } catch (err) {
+        console.warn(`[CloudDB] Cloud DB connection note: ${err.message}`);
+      }
+    })();
+  }
+  return dbInitPromise;
 }
+
+// Trigger immediate async sync on boot
+ensureDbRestored();
 
 // 1. High-Performance Gzip Compression Middleware
 app.use(compression({
@@ -124,8 +134,8 @@ app.use((req, res, next) => {
 app.use('/', createSeoRouter(indexStore));
 
 // 5. Mount API Routes
-app.use('/api/repos', rateLimit(60000, 100), createReposRouter(indexStore, crawlerDaemon));
-app.use('/api/search', createSearchRouter(indexStore));
+app.use('/api/repos', rateLimit(60000, 100), createReposRouter(indexStore, crawlerDaemon, ensureDbRestored));
+app.use('/api/search', createSearchRouter(indexStore, ensureDbRestored));
 app.use('/api/comparator', createComparatorRouter());
 app.use('/api/crawler', rateLimit(60000, 30), createCrawlerRouter(crawlerDaemon, indexStore));
 app.use('/api/features', createFeaturesRouter(indexStore));

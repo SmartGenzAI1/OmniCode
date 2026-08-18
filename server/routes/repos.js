@@ -5,11 +5,15 @@
 const express = require('express');
 const { scrapeLivePublicMeta } = require('../crawler/forgeScraper');
 
-module.exports = function createReposRouter(indexStore, crawlerDaemon) {
+module.exports = function createReposRouter(indexStore, crawlerDaemon, ensureDbRestored) {
   const router = express.Router();
 
   // 1. List & Filter Repositories with Pagination
-  router.get('/', (req, res) => {
+  router.get('/', async (req, res) => {
+    if (typeof ensureDbRestored === 'function') {
+      await ensureDbRestored().catch(() => {});
+    }
+
     const { q, language, domain, license, minStars, sortBy, sortOrder, page = 1, limit = 60 } = req.query;
     const pageNum = parseInt(page, 10) || 1;
     const limitNum = parseInt(limit, 10) || 60;

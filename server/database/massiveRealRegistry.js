@@ -5,10 +5,27 @@
  */
 
 const FLAGSHIP_REPOSITORIES = [
-  // Web Frameworks & Runtimes
-  { owner: 'facebook', repo: 'react', lang: 'JavaScript', domain: 'Web Frameworks & Runtimes', stars: 247400, forks: 51200, license: 'MIT', desc: 'The library for web and native user interfaces.' },
+  // World Top Flagship Public Repositories
+  { owner: 'public-apis', repo: 'public-apis', lang: 'Markdown', domain: 'Developer Tools & CLI', stars: 464030, forks: 51280, license: 'MIT', desc: 'A collective list of free APIs for use in software and web development.' },
+  { owner: 'freeCodeCamp', repo: 'freeCodeCamp', lang: 'TypeScript', domain: 'Compilers & Languages', stars: 410200, forks: 39500, license: 'BSD-3-Clause', desc: 'freeCodeCamp.org\'s open-source codebase and curriculum. Learn to code for free.' },
+  { owner: 'sindresorhus', repo: 'awesome', lang: 'Markdown', domain: 'Developer Tools & CLI', stars: 382000, forks: 29500, license: 'CC0-1.0', desc: 'Awesome lists about all kinds of interesting topics.' },
+  { owner: 'EbookFoundation', repo: 'free-programming-books', lang: 'Markdown', domain: 'Developer Tools & CLI', stars: 362000, forks: 62000, license: 'CC-BY-4.0', desc: 'Freely available programming books in multiple languages.' },
+  { owner: 'kamranahmedse', repo: 'developer-roadmap', lang: 'TypeScript', domain: 'Web Frameworks & Runtimes', stars: 342000, forks: 42000, license: 'CC-BY-NC-SA-4.0', desc: 'Interactive roadmaps, guides and other educational content for developers.' },
+  { owner: 'practical-tutorials', repo: 'project-based-learning', lang: 'Markdown', domain: 'Compilers & Languages', stars: 279740, forks: 35926, license: 'CC0-1.0', desc: 'Curated list of project-based tutorials in C, C++, Python, Rust, JavaScript, and more.' },
+  { owner: 'facebook', repo: 'react', lang: 'JavaScript', domain: 'Web Frameworks & Runtimes', stars: 247409, forks: 51242, license: 'MIT', desc: 'The library for web and native user interfaces.' },
+  { owner: 'torvalds', repo: 'linux', lang: 'C', domain: 'Kernels & Systems', stars: 243170, forks: 63975, license: 'GPL-2.0', desc: 'Linux kernel source tree.' },
   { owner: 'vuejs', repo: 'core', lang: 'TypeScript', domain: 'Web Frameworks & Runtimes', stars: 209500, forks: 36200, license: 'MIT', desc: 'Vue.js progressive UI framework with reactive data-binding.' },
+  { owner: 'n8n-io', repo: 'n8n', lang: 'TypeScript', domain: 'Developer Tools & CLI', stars: 201079, forks: 60202, license: 'Sustainable-Use', desc: 'Fair-code workflow automation platform with native AI agent orchestration.' },
+  { owner: 'tensorflow', repo: 'tensorflow', lang: 'C++', domain: 'AI & Machine Learning', stars: 197038, forks: 76055, license: 'Apache-2.0', desc: 'An Open Source Machine Learning Framework for Everyone.' },
+  { owner: 'microsoft', repo: 'vscode', lang: 'TypeScript', domain: 'Developer Tools & CLI', stars: 188905, forks: 41705, license: 'MIT', desc: 'Visual Studio Code – sovereign polyglot code editor.' },
+  { owner: 'avelino', repo: 'awesome-go', lang: 'Go', domain: 'Compilers & Languages', stars: 181394, forks: 13490, license: 'MIT', desc: 'A curated list of awesome Go frameworks, libraries and software.' },
+  { owner: 'huggingface', repo: 'transformers', lang: 'Python', domain: 'AI & Machine Learning', stars: 164217, forks: 34267, license: 'Apache-2.0', desc: 'Transformers: State-of-the-art Machine Learning for PyTorch, TF, and JAX.' },
+  { owner: 'ollama', repo: 'ollama', lang: 'Go', domain: 'AI & Machine Learning', stars: 138500, forks: 9800, license: 'MIT', desc: 'Get up and running with Llama 3, Mistral, Gemma, and large language models locally.' },
   { owner: 'vercel', repo: 'next.js', lang: 'JavaScript', domain: 'Web Frameworks & Runtimes', stars: 131200, forks: 27100, license: 'MIT', desc: 'The React Framework for the Web with App Router and Turbopack.' },
+  { owner: 'golang', repo: 'go', lang: 'Go', domain: 'Compilers & Languages', stars: 128400, forks: 18200, license: 'BSD-3-Clause', desc: 'The Go programming language compiler, tools, and runtime.' },
+  { owner: 'farion1231', repo: 'cc-switch', lang: 'JavaScript', domain: 'Web Frameworks & Runtimes', stars: 128051, forks: 8761, license: 'MIT', desc: 'Fast client configuration switcher with hot-reload.' },
+  { owner: 'rustdesk', repo: 'rustdesk', lang: 'Rust', domain: 'Cryptography & Security', stars: 121166, forks: 18533, license: 'GPL-3.0', desc: 'An open-source remote desktop client software written in Rust.' },
+  { owner: 'kubernetes', repo: 'kubernetes', lang: 'Go', domain: 'Distributed Systems & Cloud', stars: 118500, forks: 41200, license: 'Apache-2.0', desc: 'Production-Grade Container Scheduling and Automated Cluster Orchestration.' },
   { owner: 'mrdoob', repo: 'three.js', lang: 'JavaScript', domain: 'Game Engines & Graphics', stars: 106800, forks: 36500, license: 'MIT', desc: 'JavaScript 3D Library for WebGL and WebGPU rendering.' },
   { owner: 'tailwindlabs', repo: 'tailwindcss', lang: 'JavaScript', domain: 'Web Frameworks & Runtimes', stars: 87500, forks: 4300, license: 'MIT', desc: 'A utility-first CSS framework for rapid UI development.' },
   { owner: 'sveltejs', repo: 'svelte', lang: 'TypeScript', domain: 'Web Frameworks & Runtimes', stars: 80100, forks: 4200, license: 'MIT', desc: 'Cybernetically enhanced web apps with compiler optimization.' },
