@@ -54,6 +54,32 @@ module.exports = function createFeaturesRouter(indexStore) {
     res.json({ success: true, synced: result.synced });
   });
 
+  router.all('/database/deduplicate', async (req, res) => {
+    if (!universalDb.isConnected || !universalDb.pool) {
+      return res.status(400).json({ error: 'No cloud database connected' });
+    }
+    try {
+      const client = await universalDb.pool.connect();
+      try {
+        const delRes = await client.query(`
+          DELETE FROM omnicode_repositories a USING omnicode_repositories b
+          WHERE a.ctid < b.ctid AND LOWER(a.full_name) = LOWER(b.full_name);
+        `);
+        const countRes = await client.query('SELECT COUNT(*) FROM omnicode_repositories');
+        res.json({
+          success: true,
+          message: 'Database deduplication completed successfully',
+          duplicatesPurged: delRes.rowCount || 0,
+          totalUniqueRepositories: parseInt(countRes.rows[0].count, 10)
+        });
+      } finally {
+        client.release();
+      }
+    } catch (err) {
+      res.status(500).json({ success: false, error: err.message });
+    }
+  });
+
   // 2. Storage Status & Disk Inspection
   router.get('/storage/status', (req, res) => {
     try {

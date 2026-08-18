@@ -194,10 +194,11 @@ async function cloneAndIndexPublicRepo(gitUrl, tempBase = path.join(__dirname, '
       readme = readmeFile.content;
     }
 
+    const fullName = cleanUrl.replace(/^https?:\/\/[^\/]+\//, '').replace(/\.git$/, '');
     const repoRecord = {
-      id: `repo_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`,
+      id: `git_${fullName}`.toLowerCase().replace(/[^a-zA-Z0-9_]/g, '_'),
       name: repoName,
-      fullName: cleanUrl.replace(/^https?:\/\/[^\/]+\//, '').replace(/\.git$/, ''),
+      fullName: fullName,
       gitUrl: cleanUrl,
       sourceForge: cleanUrl.includes('github') ? 'GitHub' : cleanUrl.includes('gitlab') ? 'GitLab' : cleanUrl.includes('codeberg') ? 'Codeberg' : 'Autonomous Git',
       description: `Indexed autonomously from ${cleanUrl}`,

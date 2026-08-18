@@ -81,6 +81,10 @@ class UniversalDbConnector {
           );
           CREATE INDEX IF NOT EXISTS idx_omni_lang ON omnicode_repositories (primary_language);
           CREATE INDEX IF NOT EXISTS idx_omni_stars ON omnicode_repositories (stars DESC);
+
+          -- Auto-Deduplicate: Delete older duplicate rows by full_name, keeping newest
+          DELETE FROM omnicode_repositories a USING omnicode_repositories b
+          WHERE a.ctid < b.ctid AND LOWER(a.full_name) = LOWER(b.full_name);
         `);
       } finally {
         client.release();
@@ -204,6 +208,15 @@ class UniversalDbConnector {
           repo.healthScore || 95,
           JSON.stringify(repo)
         ]);
+
+        // Clean any older duplicate records with different legacy timestamp IDs
+        if (repo.fullName) {
+          await client.query(`
+            DELETE FROM omnicode_repositories
+            WHERE LOWER(full_name) = LOWER($1) AND id <> $2
+          `, [repo.fullName, repo.id]).catch(() => {});
+        }
+
         this.syncedCount++;
         return true;
       } finally {

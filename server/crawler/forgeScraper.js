@@ -217,7 +217,7 @@ async function scrapePublicRepositoryFast(owner, repo, forge = 'github', sampleF
   const graph = buildRepositoryGraph(fetchedFiles);
 
   return {
-    id: `forge_${owner}_${repo}_${Date.now()}`,
+    id: `forge_${owner}_${repo}`.toLowerCase().replace(/[^a-zA-Z0-9_]/g, '_'),
     name: repo,
     fullName: `${owner}/${repo}`,
     gitUrl: forge === 'gitlab' ? `https://gitlab.com/${owner}/${repo}.git` : forge === 'codeberg' ? `https://codeberg.org/${owner}/${repo}.git` : `https://github.com/${owner}/${repo}.git`,
