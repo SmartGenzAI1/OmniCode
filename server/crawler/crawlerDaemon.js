@@ -7,6 +7,7 @@ const EventEmitter = require('events');
 const { cloneAndIndexPublicRepo, scanDirectoryRecursively } = require('./gitEngine');
 const { scrapePublicRepositoryFast } = require('./forgeScraper');
 const HighSpeedHarvestPipeline = require('./highSpeedHarvestPipeline');
+const LiveAutonomousCrawler = require('./liveAutonomousCrawler');
 
 class CrawlerDaemon extends EventEmitter {
   constructor(indexStore) {
@@ -16,10 +17,32 @@ class CrawlerDaemon extends EventEmitter {
     this.isProcessing = false;
     this.logHistory = [];
 
-    // Initialize High-Speed Multi-Worker Pipeline (150 repos/min default)
+    // 1. Live Multi-Source Autonomous Crawler (real GitHub Topics & Trending)
+    this.liveCrawler = new LiveAutonomousCrawler(indexStore);
+
+    // 2. Multi-Worker Pipeline
     this.pipeline = new HighSpeedHarvestPipeline(indexStore.storage, this);
 
     this.bindPipelineEvents();
+    this.bindLiveCrawlerEvents();
+  }
+
+  bindLiveCrawlerEvents() {
+    this.liveCrawler.on('crawler-log', (entry) => {
+      this.logHistory.unshift(entry);
+      if (this.logHistory.length > 300) this.logHistory.pop();
+      this.emit('crawler-log', entry);
+    });
+
+    this.liveCrawler.on('repo-indexed', (repo) => {
+      this.emit('repo-indexed', repo);
+      this.emit('stats-updated', this.getStats());
+    });
+
+    this.liveCrawler.on('batch-indexed', (batchInfo) => {
+      this.emit('batch-indexed', batchInfo);
+      this.emit('stats-updated', this.getStats());
+    });
   }
 
   bindPipelineEvents() {

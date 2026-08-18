@@ -47,10 +47,30 @@ module.exports = function createCrawlerRouter(crawlerDaemon) {
     });
   });
 
+  // Trigger on-demand real multi-source batch crawl (GitHub Topics / Trending / GitLab)
+  router.all('/auto-harvest/real-tick', async (req, res) => {
+    const count = Math.min(10, Math.max(1, parseInt(req.query.count || req.body?.count, 10) || 2));
+    try {
+      if (crawlerDaemon.liveCrawler) {
+        const result = await crawlerDaemon.liveCrawler.harvestNextRealBatch(count);
+        return res.json({
+          success: true,
+          harvested: result.count,
+          repos: result.indexed.map(r => ({ fullName: r.fullName, stars: r.stars, lang: r.primaryLanguage, sloc: r.totalSLOC })),
+          stats: crawlerDaemon.getStats()
+        });
+      }
+      res.json({ success: false, message: 'Live crawler not initialized' });
+    } catch (e) {
+      res.status(500).json({ error: e.message });
+    }
+  });
+
   // Get current crawler stats
   router.get('/stats', (req, res) => {
     res.json({
       stats: crawlerDaemon.getStats(),
+      liveStats: crawlerDaemon.liveCrawler ? crawlerDaemon.liveCrawler.getStats() : null,
       recentLogs: crawlerDaemon.getRecentLogs()
     });
   });

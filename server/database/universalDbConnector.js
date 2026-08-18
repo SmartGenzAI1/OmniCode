@@ -171,6 +171,75 @@ class UniversalDbConnector {
     return { synced: successCount };
   }
 
+  async insertRepository(repo) {
+    if (!this.isConnected || !this.pool || !repo || !repo.id) return false;
+    try {
+      const client = await this.pool.connect();
+      try {
+        const queryText = `
+          INSERT INTO omnicode_repositories (
+            id, name, full_name, git_url, primary_language, domain, license, stars, forks, total_sloc, health_score, raw_payload, updated_at
+          ) VALUES (
+            $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, CURRENT_TIMESTAMP
+          )
+          ON CONFLICT (id) DO UPDATE SET
+            stars = EXCLUDED.stars,
+            forks = EXCLUDED.forks,
+            total_sloc = EXCLUDED.total_sloc,
+            health_score = EXCLUDED.health_score,
+            raw_payload = EXCLUDED.raw_payload,
+            updated_at = CURRENT_TIMESTAMP
+        `;
+        await client.query(queryText, [
+          repo.id,
+          repo.name || 'unknown',
+          repo.fullName || repo.name || 'unknown',
+          repo.gitUrl || `https://github.com/${repo.fullName}.git`,
+          repo.primaryLanguage || 'Other',
+          repo.domain || 'Systems',
+          repo.license || 'MIT',
+          repo.stars || 0,
+          repo.forks || 0,
+          repo.totalSLOC || 0,
+          repo.healthScore || 95,
+          JSON.stringify(repo)
+        ]);
+        this.syncedCount++;
+        return true;
+      } finally {
+        client.release();
+      }
+    } catch (err) {
+      console.warn('[CloudDB] Single repo insert note:', err.message);
+      return false;
+    }
+  }
+
+  async fetchAllRepositories(limit = 10000) {
+    if (!this.isConnected || !this.pool) return [];
+    try {
+      const client = await this.pool.connect();
+      try {
+        const result = await client.query(`
+          SELECT raw_payload FROM omnicode_repositories
+          ORDER BY stars DESC
+          LIMIT $1
+        `, [limit]);
+        return result.rows.map(row => {
+          if (typeof row.raw_payload === 'string') {
+            try { return JSON.parse(row.raw_payload); } catch (_) { return null; }
+          }
+          return row.raw_payload;
+        }).filter(Boolean);
+      } finally {
+        client.release();
+      }
+    } catch (err) {
+      console.error('[CloudDB] Failed to fetch repositories from Cloud DB:', err.message);
+      return [];
+    }
+  }
+
   getStatus() {
     return {
       isConnected: this.isConnected,

@@ -129,6 +129,15 @@ class IndexStore {
     if (!repo || !repo.id) return;
     this.storage.insertOrUpdate(repo);
     this.indexRecordInMemory(repo);
+
+    if (persist) {
+      try {
+        const universalDb = require('./universalDbConnector');
+        if (universalDb.isConnected) {
+          universalDb.insertRepository(repo).catch(() => {});
+        }
+      } catch (_) {}
+    }
   }
 
   getRepositoryById(id) {

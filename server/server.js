@@ -59,15 +59,22 @@ setInterval(() => {
 const indexStore = new OmniIndexStore();
 const crawlerDaemon = new CrawlerDaemon(indexStore);
 
-// Auto-sync to Cloud DB (Neon / Supabase) if DATABASE_URL is present
+// Two-Way Synchronization with Cloud PostgreSQL (Neon / Supabase)
 if (process.env.DATABASE_URL) {
-  universalDb.connect(process.env.DATABASE_URL).then(() => {
-    const all = indexStore.getAllRepositories();
-    return universalDb.syncRepositories(all);
-  }).then(res => {
-    console.log(`[CloudDB] Auto-synchronized ${res?.synced || 0} repositories to Cloud Database on boot.`);
+  universalDb.connect(process.env.DATABASE_URL).then(async () => {
+    // 1. Restore any persistent repositories already in Neon PostgreSQL
+    const cloudRepos = await universalDb.fetchAllRepositories(50000);
+    if (cloudRepos.length > 0) {
+      cloudRepos.forEach(r => indexStore.addRepository(r, false));
+      console.log(`[CloudDB] Successfully restored and indexed ${cloudRepos.length} persistent repositories from Neon PostgreSQL.`);
+    } else {
+      // 2. First boot: Initialize and sync the full initial catalog to Neon
+      const all = indexStore.getAllRepositories();
+      const res = await universalDb.syncRepositories(all);
+      console.log(`[CloudDB] First boot: Initialized ${res?.synced || 0} repositories into Neon Database.`);
+    }
   }).catch(err => {
-    console.warn(`[CloudDB] Cloud DB auto-connect note: ${err.message}`);
+    console.warn(`[CloudDB] Cloud DB connection note: ${err.message}`);
   });
 }
 

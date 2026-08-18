@@ -106,6 +106,22 @@ class OmniApp {
     await this.comparator.init();
     this.handleDeepLink();
     window.addEventListener('hashchange', () => this.handleDeepLink());
+    this.startLiveAutonomousPulse();
+  }
+
+  startLiveAutonomousPulse() {
+    // Pulse real GitHub discovery tick every 60s while developer is browsing
+    setInterval(async () => {
+      try {
+        const res = await fetch('/api/crawler/auto-harvest/real-tick?count=2');
+        const data = await res.json();
+        if (data.success && Array.isArray(data.repos) && data.repos.length > 0) {
+          const first = data.repos[0];
+          this.showToast(`Auto-Indexed from GitHub: ${first.fullName} (★${(first.stars || 0).toLocaleString()})`, 'success');
+          this.refreshGlobalIndex();
+        }
+      } catch (_) {}
+    }, 60000);
   }
 
   bindEvents() {

@@ -551,7 +551,20 @@
           <!-- Dual Operation Panels -->
           <div class="mission-split-view">
             <div class="mission-form-panel">
-              <span class="filter-title">Manual Ingestion</span>
+              <span class="filter-title">Ingestion & Discovery Engines</span>
+
+              <!-- Live Autonomous Explorer Card -->
+              <div class="mission-method-card" style="background-color: hsla(200, 85%, 52%, 0.05); border-color: hsla(200, 85%, 52%, 0.3);">
+                <div style="display: flex; align-items: center; justify-content: space-between;">
+                  <span class="storage-sub-note" style="font-weight: 700; color: var(--accent-cyan);">Autonomous GitHub Explorer</span>
+                  <span style="font-size: 10px; color: var(--accent-emerald); font-family: var(--font-mono);">● Neon DB Sync</span>
+                </div>
+                <p style="font-size: 11px; color: var(--text-muted); margin: 4px 0 8px 0;">Discovers live GitHub Trending, developer topics, and GitLab repos, extracting real AST symbols & saving to Neon PostgreSQL.</p>
+                <button class="btn-primary-action" id="btn-trigger-live-harvest" style="width: 100%; justify-content: center; background: linear-gradient(135deg, hsl(200, 85%, 52%), hsl(155, 65%, 45%)); border: none; color: #fff; font-weight: 700; padding: 7px 12px;">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
+                  <span>Crawl & Index Live GitHub Repos</span>
+                </button>
+              </div>
 
               <div class="mission-method-card">
                 <span class="storage-sub-note" style="font-weight: 600; color: var(--text-primary);">Git Remote URL</span>

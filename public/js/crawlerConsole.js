@@ -21,7 +21,9 @@ class OmniCrawlerConsole {
       btnEnqueueForge: document.getElementById('btn-enqueue-forge'),
       
       inputLocalPath: document.getElementById('input-local-path'),
-      btnEnqueueLocal: document.getElementById('btn-enqueue-local')
+      btnEnqueueLocal: document.getElementById('btn-enqueue-local'),
+
+      btnTriggerLiveHarvest: document.getElementById('btn-trigger-live-harvest')
     };
 
     this.eventSource = null;
@@ -33,6 +35,36 @@ class OmniCrawlerConsole {
     if (this.dom.btnClearLogs && this.dom.logFeed) {
       this.dom.btnClearLogs.addEventListener('click', () => {
         this.dom.logFeed.innerHTML = '';
+      });
+    }
+
+    // Trigger Autonomous Live Batch Crawl
+    if (this.dom.btnTriggerLiveHarvest) {
+      this.dom.btnTriggerLiveHarvest.addEventListener('click', async () => {
+        const btn = this.dom.btnTriggerLiveHarvest;
+        const originalHtml = btn.innerHTML;
+        btn.innerHTML = `<span style="opacity: 0.8;">Crawling Live Repos...</span>`;
+        btn.disabled = true;
+
+        try {
+          if (window.app) window.app.showToast('Scanning GitHub for new live repositories...', 'info');
+          const res = await fetch('/api/crawler/auto-harvest/real-tick?count=3');
+          const data = await res.json();
+          if (data.success && data.repos && data.repos.length > 0) {
+            const list = data.repos.map(r => r.fullName).join(', ');
+            if (window.app) {
+              window.app.showToast(`Indexed ${data.repos.length} live repos: ${list}`, 'success');
+              window.app.refreshGlobalIndex();
+            }
+          } else {
+            if (window.app) window.app.showToast('Autonomous crawler scanned feeds (queue updated).', 'info');
+          }
+        } catch (err) {
+          if (window.app) window.app.showToast(`Discovery error: ${err.message}`, 'error');
+        } finally {
+          btn.innerHTML = originalHtml;
+          btn.disabled = false;
+        }
       });
     }
 
