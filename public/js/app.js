@@ -104,7 +104,9 @@ class OmniApp {
       modalInputUrl: document.getElementById('modal-input-url'),
       
       viewerRepoSelect: document.getElementById('viewer-repo-select'),
-      graphRepoSelect: document.getElementById('graph-repo-select')
+      graphRepoSelect: document.getElementById('graph-repo-select'),
+      valVisitorsTotal: document.getElementById('val-visitors-total'),
+      valVisitorsToday: document.getElementById('val-visitors-today')
     };
 
     this.init();
@@ -115,11 +117,33 @@ class OmniApp {
     this.bindCommandPalette();
     this.bindSymbolSearch();
     this.bindSecurityAndExport();
+    this.trackUniqueVisitor();
     await this.refreshGlobalIndex();
     await this.comparator.init();
     this.handleDeepLink();
     window.addEventListener('hashchange', () => this.handleDeepLink());
     this.startLiveAutonomousPulse();
+  }
+
+  async trackUniqueVisitor() {
+    try {
+      let visitorId = localStorage.getItem('omnicode_visitor_id');
+      if (!visitorId) {
+        visitorId = 'usr_' + Math.random().toString(36).slice(2) + Date.now().toString(36);
+        localStorage.setItem('omnicode_visitor_id', visitorId);
+      }
+
+      const res = await fetch('/api/features/visitors/ping', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ fingerprint: visitorId })
+      });
+      const data = await res.json();
+      if (data && data.total) {
+        if (this.dom.valVisitorsTotal) this.dom.valVisitorsTotal.textContent = (data.total || 0).toLocaleString();
+        if (this.dom.valVisitorsToday) this.dom.valVisitorsToday.textContent = `${(data.today || 0).toLocaleString()} today`;
+      }
+    } catch (_) {}
   }
 
   startLiveAutonomousPulse() {
