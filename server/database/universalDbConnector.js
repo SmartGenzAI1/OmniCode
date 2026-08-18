@@ -240,6 +240,21 @@ class UniversalDbConnector {
     }
   }
 
+  async countRepositories() {
+    if (!this.isConnected || !this.pool) return 0;
+    try {
+      const client = await this.pool.connect();
+      try {
+        const result = await client.query('SELECT COUNT(*) as cnt FROM omnicode_repositories');
+        return parseInt(result.rows[0]?.cnt, 10) || 0;
+      } finally {
+        client.release();
+      }
+    } catch (e) {
+      return 0;
+    }
+  }
+
   getStatus() {
     return {
       isConnected: this.isConnected,

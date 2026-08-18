@@ -67,9 +67,28 @@ module.exports = function createCrawlerRouter(crawlerDaemon) {
   });
 
   // Get current crawler stats
-  router.get('/stats', (req, res) => {
+  router.get('/stats', async (req, res) => {
+    // If tick requested, run a live crawl batch
+    if (req.query.tick === '1' && crawlerDaemon.liveCrawler) {
+      await crawlerDaemon.liveCrawler.harvestNextRealBatch(1).catch(() => {});
+    }
+
+    const universalDb = require('../database/universalDbConnector');
+    let dbCount = 0;
+    if (universalDb.isConnected) {
+      dbCount = await universalDb.countRepositories();
+    }
+
+    const stats = crawlerDaemon.getStats();
+    if (dbCount > 0) {
+      stats.totalIndexed = Math.max(stats.totalIndexed, dbCount);
+      stats.storeCount = Math.max(stats.storeCount, dbCount);
+      stats.dbSynced = true;
+      stats.dbCount = dbCount;
+    }
+
     res.json({
-      stats: crawlerDaemon.getStats(),
+      stats,
       liveStats: crawlerDaemon.liveCrawler ? crawlerDaemon.liveCrawler.getStats() : null,
       recentLogs: crawlerDaemon.getRecentLogs()
     });

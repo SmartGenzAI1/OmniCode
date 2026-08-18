@@ -124,7 +124,7 @@ app.use((req, res, next) => {
 app.use('/', createSeoRouter(indexStore));
 
 // 5. Mount API Routes
-app.use('/api/repos', rateLimit(60000, 100), createReposRouter(indexStore));
+app.use('/api/repos', rateLimit(60000, 100), createReposRouter(indexStore, crawlerDaemon));
 app.use('/api/search', createSearchRouter(indexStore));
 app.use('/api/comparator', createComparatorRouter());
 app.use('/api/crawler', rateLimit(60000, 30), createCrawlerRouter(crawlerDaemon, indexStore));
