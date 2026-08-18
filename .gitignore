@@ -1,0 +1,7 @@
+node_modules/
+omni_data/
+.env
+*.log
+.DS_Store
+Thumbs.db
+omnicode_index.json

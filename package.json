@@ -1,0 +1,27 @@
+{
+  "name": "omnicode-metaforge",
+  "version": "1.0.0",
+  "description": "Sovereign Public Codebase Indexer & Polyglot Meta-Forge - Zero API Dependency",
+  "main": "server/server.js",
+  "scripts": {
+    "start": "node server/server.js",
+    "dev": "node server/server.js"
+  },
+  "keywords": [
+    "git",
+    "code-indexer",
+    "meta-forge",
+    "polyglot",
+    "ast-analyzer",
+    "code-search"
+  ],
+  "author": "OmniCode Sovereign Engine",
+  "license": "MIT",
+  "dependencies": {
+    "compression": "^1.8.1",
+    "cors": "^2.8.5",
+    "dotenv": "^17.4.2",
+    "express": "^4.19.2",
+    "pg": "^8.23.0"
+  }
+}

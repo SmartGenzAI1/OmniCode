@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+  
+  <!-- Primary SEO Metadata -->
+  <title>OmniCode // Sovereign Public Codebase Meta-Forge & Universal AST Search</title>
+  <meta name="description" content="OmniCode is the autonomous meta-forge indexing all public open-source software with sub-millisecond AST symbol search, polyglot algorithm comparator, and Obsidian-style neural universe cluster graphs.">
+  <meta name="keywords" content="github alternative, open source code indexer, ast symbol search, code explorer, polyglot programming, git repository search, obsidian graph code visualizer">
+  <meta name="author" content="OmniCode Sovereign Engine">
+  <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1">
+  <link rel="canonical" id="canonical-link" href="/">
+  <link rel="manifest" href="/manifest.json">
+  <link rel="icon" type="image/jpeg" href="assets/logo.jpg" loading="lazy">
+  <meta name="theme-color" content="#07090e">
+  
+  <!-- Open Graph / Facebook / LinkedIn Meta -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" id="og-url" content="/">
+  <meta property="og:title" content="OmniCode // Sovereign Public Codebase Meta-Forge">
+  <meta property="og:description" content="Index, explore, and analyze thousands of public repositories with AST symbol search and Obsidian-style neural universe cluster graphs.">
+  <meta property="og:image" id="og-image" content="/assets/logo.jpg">
+  <meta property="og:site_name" content="OmniCode Meta-Forge">
+
+  <!-- Twitter Meta -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:url" content="/">
+  <meta name="twitter:title" content="OmniCode // Sovereign Public Codebase Meta-Forge">
+  <meta name="twitter:description" content="Universal AST symbol analyzer, polyglot comparator, and autonomous code indexer for all public open-source software.">
+  <meta name="twitter:image" content="/assets/logo.jpg">
+
+  <!-- Schema.org JSON-LD Structured Data for Google Rich Snippets -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "SoftwareApplication",
+        "name": "OmniCode Sovereign Meta-Forge",
+        "applicationCategory": "DeveloperApplication",
+        "operatingSystem": "All",
+        "description": "Autonomous public codebase indexer, universal AST symbol analyzer, and polyglot code studio.",
+        "offers": {
+          "@type": "Offer",
+          "price": "0",
+          "priceCurrency": "USD"
+        }
+      },
+      {
+        "@type": "WebSite",
+        "url": "https://omnicode.dev/",
+        "name": "OmniCode",
+        "potentialAction": {
+          "@type": "SearchAction",
+          "target": "https://omnicode.dev/?q={search_term_string}",
+          "query-input": "required name=search_term_string"
+        }
+      }
+    ]
+  }
+  </script>
+  
+  <!-- Typography -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/explorer.css">
+  <link rel="stylesheet" href="css/viewer.css">
+</head>
+<body>
+  <div id="omni-app" class="omni-shell">
+    
+    <!-- TOP NAVIGATION BAR -->
+    <header class="omni-topbar">
+      <div class="topbar-left">
+        <!-- Mobile Hamburger Button -->
+        <button class="btn-hamburger" id="btn-mobile-hamburger" title="Open Menu" aria-label="Open Navigation Drawer" aria-expanded="false" aria-controls="mobile-drawer-overlay">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+        </button>
+
+        <a class="brand-container" id="brand-home-link" title="OmniCode Meta-Forge">
+          <img src="assets/logo.jpg" alt="OmniCode Logo" class="brand-img-logo" loading="lazy">
+          <span class="brand-title">OmniCode</span>
+          <span class="brand-version-badge">v2.0</span>
+        </a>
+
+        <!-- Desktop Navigation Tabs -->
+        <nav class="omni-tabs desktop-tabs" role="tablist" aria-label="Main navigation">
+          <button class="tab-btn active" data-tab="explorer" id="tab-btn-explorer" role="tab" aria-selected="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+            <span>Explore</span>
+          </button>
+          <button class="tab-btn" data-tab="viewer" id="tab-btn-viewer" role="tab" aria-selected="false">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg>
+            <span>Code Studio</span>
+          </button>
+          <button class="tab-btn" data-tab="symbols" id="tab-btn-symbols" role="tab" aria-selected="false">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="4" y1="9" x2="20" y2="9"></line><line x1="4" y1="15" x2="20" y2="15"></line><line x1="10" y1="3" x2="8" y2="21"></line><line x1="16" y1="3" x2="14" y2="21"></line></svg>
+            <span>Symbols</span>
+          </button>
+          <button class="tab-btn" data-tab="comparator" id="tab-btn-comparator" role="tab" aria-selected="false">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="12" y1="3" x2="12" y2="21"></line></svg>
+            <span>Polyglot</span>
+          </button>
+          <button class="tab-btn" data-tab="graph" id="tab-btn-graph" role="tab" aria-selected="false">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="6" cy="6" r="3"></circle><circle cx="18" cy="18" r="3"></circle><circle cx="6" cy="18" r="3"></circle><line x1="6" y1="9" x2="6" y2="15"></line><line x1="8.5" y1="7.5" x2="15.5" y2="15.5"></line></svg>
+            <span>Obsidian Cluster</span>
+          </button>
+          <button class="tab-btn" data-tab="crawler" id="tab-btn-crawler" role="tab" aria-selected="false">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line></svg>
+            <span>Harvester</span>
+          </button>
+        </nav>
+      </div>
+
+      <!-- Right Actions: Command Search & Index Codebase -->
+      <div class="topbar-right">
+        <button class="btn-command-search" id="btn-open-palette" title="Quick Jump (Ctrl+K / ⌘K)">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+          <span>Search</span>
+          <kbd class="kbd-tag">⌘K</kbd>
+        </button>
+
+        <button class="btn-primary-action" id="btn-open-ingest-modal" title="Index any public git remote or local folder">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+          <span>Index</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- MOBILE NAVIGATION DRAWER -->
+    <div class="mobile-drawer-backdrop" id="mobile-drawer-overlay" style="display: none;">
+      <div class="mobile-drawer-content">
+        <div class="mobile-drawer-header">
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <img src="assets/logo.jpg" alt="OmniCode" class="brand-img-logo">
+            <span class="brand-title" style="display: inline-block;">OmniCode</span>
+          </div>
+          <button class="btn-modal-close" id="btn-close-mobile-drawer">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+          </button>
+        </div>
+
+        <div class="mobile-nav-list">
+          <button class="mobile-nav-item active" data-tab="explorer">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+            <span>Explore Codebases</span>
+          </button>
+          <button class="mobile-nav-item" data-tab="viewer">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg>
+            <span>Code Studio & AST</span>
+          </button>
+          <button class="mobile-nav-item" data-tab="symbols">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="4" y1="9" x2="20" y2="9"></line><line x1="4" y1="15" x2="20" y2="15"></line><line x1="10" y1="3" x2="8" y2="21"></line><line x1="16" y1="3" x2="14" y2="21"></line></svg>
+            <span>Global Symbols</span>
+          </button>
+          <button class="mobile-nav-item" data-tab="comparator">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="12" y1="3" x2="12" y2="21"></line></svg>
+            <span>Polyglot Matrix</span>
+          </button>
+          <button class="mobile-nav-item" data-tab="graph">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="6" cy="6" r="3"></circle><circle cx="18" cy="18" r="3"></circle><circle cx="6" cy="18" r="3"></circle><line x1="6" y1="9" x2="6" y2="15"></line><line x1="8.5" y1="7.5" x2="15.5" y2="15.5"></line></svg>
+            <span>Obsidian Cluster Graph</span>
+          </button>
+          <button class="mobile-nav-item" data-tab="crawler">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line></svg>
+            <span>Harvester Mission Control</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- MAIN WORKSPACE -->
+    <main class="omni-workspace">
+      
+      <!-- ================= 1. REPOSITORY EXPLORER ================= -->
+      <section class="tab-pane active" id="pane-explorer">
+        <div class="explorer-container">
+          
+          <!-- Filter Sidebar -->
+          <aside class="explorer-sidebar">
+            <div class="sidebar-header">
+              <h3>Filters</h3>
+              <button class="btn-text-action" id="btn-reset-filters">Reset</button>
+            </div>
+
+            <!-- Language Pills -->
+            <div class="filter-section">
+              <span class="filter-title">Languages</span>
+              <div class="language-pills-container" id="language-filter-list">
+                <!-- Injected dynamically -->
+              </div>
+            </div>
+
+            <!-- Technical Domain -->
+            <div class="filter-section">
+              <span class="filter-title">Domain</span>
+              <select id="domain-select" class="omni-select">
+                <option value="all">All Domains</option>
+                <option value="Compilers & Languages">Compilers & Languages</option>
+                <option value="Kernels & Systems">Kernels & Systems</option>
+                <option value="AI & Machine Learning">AI & Machine Learning</option>
+                <option value="Databases & Storage">Databases & Storage</option>
+                <option value="Distributed Systems & Cloud">Distributed Systems & Cloud</option>
+                <option value="Web Frameworks & Runtimes">Web Frameworks & Runtimes</option>
+                <option value="Game Engines & Graphics">Game Engines & Graphics</option>
+                <option value="Developer Tools & CLI">Developer Tools & CLI</option>
+                <option value="Cryptography & Security">Cryptography & Security</option>
+              </select>
+            </div>
+
+            <!-- License Filter -->
+            <div class="filter-section">
+              <span class="filter-title">License</span>
+              <select id="license-select" class="omni-select">
+                <option value="all">All Licenses</option>
+                <option value="MIT">MIT License</option>
+                <option value="Apache-2.0">Apache 2.0</option>
+                <option value="BSD-3-Clause">BSD-3-Clause</option>
+                <option value="GPL-3.0">GPL-3.0</option>
+                <option value="GPL-2.0">GPL-2.0</option>
+                <option value="MPL-2.0">MPL-2.0</option>
+                <option value="Unlicense">Public Domain</option>
+              </select>
+            </div>
+
+            <!-- Min Stars Slider -->
+            <div class="filter-section">
+              <div class="slider-top-row">
+                <span class="filter-title">Min Stars</span>
+                <span id="star-count-display" class="slider-val-tag">0</span>
+              </div>
+              <input type="range" id="stars-range" min="0" max="100000" step="5000" value="0" class="omni-range">
+            </div>
+
+            <!-- Storage Overview Box -->
+            <div class="sidebar-storage-badge">
+              <div class="storage-badge-row">
+                <span class="storage-badge-label">Storage Engine</span>
+                <span class="storage-badge-val color-emerald" id="sidebar-db-status">Sovereign DB</span>
+              </div>
+              <div class="storage-badge-row">
+                <span class="storage-badge-label">Indexed Repos</span>
+                <span class="storage-badge-val" id="stat-total-repos">2,311</span>
+              </div>
+              <div class="storage-badge-row">
+                <span class="storage-badge-label">Total SLOC</span>
+                <span class="storage-badge-val" id="stat-total-sloc">9,085,166</span>
+              </div>
+            </div>
+          </aside>
+
+          <!-- Main Stream Area -->
+          <div class="explorer-main">
+            
+            <!-- Search & Controls Bar -->
+            <div class="explorer-control-bar">
+              <div class="search-bar-row">
+                <svg class="search-icon-svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                <input type="text" id="global-search-input" placeholder="Search codebases, symbols, domains or use operators (e.g. lang:rust stars:>50k domain:AI)..." autocomplete="off" aria-label="Search codebases">
+                <button class="btn-search-clear" id="btn-clear-search" style="display: none;">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                </button>
+              </div>
+
+              <!-- Filter Operator Chips -->
+              <div class="filter-chips-row">
+                <span class="chip-caption">Quick Filters:</span>
+                <button class="query-chip" data-query="lang:rust">lang:rust</button>
+                <button class="query-chip" data-query="lang:go">lang:go</button>
+                <button class="query-chip" data-query="lang:zig">lang:zig</button>
+                <button class="query-chip" data-query="lang:python">lang:python</button>
+                <button class="query-chip" data-query="domain:&quot;AI &amp; Machine Learning&quot;">domain:AI</button>
+                <button class="query-chip" data-query="domain:&quot;Kernels &amp; Systems&quot;">domain:Kernels</button>
+                <button class="query-chip" data-query="stars:>100000">stars:>100k</button>
+              </div>
+
+              <!-- Stream Toolbar: Results Count + Layout View Mode Switcher + Sorter -->
+              <div class="stream-header-toolbar">
+                <div class="stream-match-count" id="results-count-text">Loading sovereign index...</div>
+                
+                <div class="stream-toolbar-right">
+                  <!-- View Mode Switcher: Grid vs Compact List -->
+                  <div class="layout-toggle-group">
+                    <button class="btn-layout-toggle active" data-mode="grid" id="btn-view-grid" title="Grid View">
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+                    </button>
+                    <button class="btn-layout-toggle" data-mode="list" id="btn-view-list" title="List View">
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg>
+                    </button>
+                  </div>
+
+                  <div class="sort-group">
+                    <span class="sort-label-text">Sort:</span>
+                    <select id="sort-by-select" class="omni-select-mini">
+                      <option value="stars">Stars</option>
+                      <option value="sloc">Lines of Code</option>
+                      <option value="complexity">Complexity</option>
+                      <option value="health">Health Score</option>
+                      <option value="files">File Count</option>
+                      <option value="name">Name (A-Z)</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Repository Cards Container -->
+            <div class="repo-cards-container" id="repo-cards-container">
+              <!-- Dynamically populated -->
+            </div>
+
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= 2. CODE STUDIO ================= -->
+      <section class="tab-pane" id="pane-viewer">
+        <div class="studio-layout">
+          
+          <!-- Left Studio Sidebar: File Tree & AST Symbols -->
+          <aside class="studio-sidebar-pane">
+            <div class="studio-repo-selector-row">
+              <span class="studio-label-heading">Active Repository</span>
+              <select id="viewer-repo-select" class="omni-select">
+                <!-- Options -->
+              </select>
+            </div>
+
+            <!-- Git Toolbar -->
+            <div class="studio-git-toolbar">
+              <a href="#" target="_blank" rel="noopener noreferrer" class="btn-forge-external" id="btn-official-git-link">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+                <span>GitHub Source</span>
+              </a>
+              <button class="btn-clone-snippet" id="btn-quick-clone" title="Copy git clone command">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                <span>Clone</span>
+              </button>
+            </div>
+
+            <!-- File Hierarchy Tree -->
+            <div class="studio-tree-pane">
+              <div class="pane-section-header">
+                <span>SOURCE FILES (<span id="viewer-file-count">0</span>)</span>
+              </div>
+              <div class="pane-scrollable-list" id="viewer-tree-list">
+                <!-- Tree items -->
+              </div>
+            </div>
+
+            <!-- AST Symbol Inspector -->
+            <div class="studio-symbols-pane">
+              <div class="pane-section-header">
+                <span>AST SYMBOLS (<span id="viewer-symbol-count">0</span>)</span>
+              </div>
+              <div class="pane-scrollable-list" id="viewer-symbol-list">
+                <!-- Symbols -->
+              </div>
+            </div>
+          </aside>
+
+          <!-- Right Studio Viewport -->
+          <div class="studio-main-viewport">
+            
+            <!-- Viewport Header -->
+            <div class="studio-viewport-topbar">
+              <div class="viewport-path-breadcrumbs">
+                <span class="crumb-repo" id="breadcrumb-repo-name">--</span>
+                <span class="crumb-divider">/</span>
+                <span class="crumb-file" id="breadcrumb-file-path">Select a file</span>
+              </div>
+
+              <div class="viewport-tools-group">
+                <div class="view-mode-pill-toggle">
+                  <button class="btn-view-pill active" id="btn-mode-code">Source</button>
+                  <button class="btn-view-pill" id="btn-mode-readme">README</button>
+                </div>
+                <button class="btn-action-pill" id="btn-run-security-scan" title="Run Static Code Health & Security Analysis">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align: middle; margin-right: 3px;"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+                  <span>Health Scan</span>
+                </button>
+                <button class="btn-action-pill" id="btn-export-bundle" title="Export Sovereign Codebase Manifest JSON">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align: middle; margin-right: 3px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                  <span>Export</span>
+                </button>
+                <span class="metric-tag-pill" id="metric-language">--</span>
+                <span class="metric-tag-pill" id="metric-sloc">-- SLOC</span>
+                <span class="metric-tag-pill" id="metric-complexity">C: --</span>
+                <button class="btn-action-pill" id="btn-copy-code">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align: middle; margin-right: 3px;"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                  <span>Copy</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Code Surface -->
+            <div class="editor-code-container" id="viewport-code-surface">
+              <div class="editor-line-gutter" id="editor-line-numbers"></div>
+              <pre class="editor-code-stream" id="editor-code-content"><code>// Select any file from the file tree on the left to inspect source code and AST symbols.</code></pre>
+            </div>
+
+            <!-- Rendered Markdown Readme Surface -->
+            <div class="editor-markdown-container" id="viewport-readme-surface" style="display: none;">
+              <div class="markdown-document" id="rendered-readme-content"></div>
+            </div>
+
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= 3. GLOBAL SYMBOL SEARCH ================= -->
+      <section class="tab-pane" id="pane-symbols">
+        <div class="symbols-workspace">
+          <div class="symbols-search-header">
+            <div class="symbol-input-box">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+              <input type="text" id="symbol-search-input" placeholder="Search functions, structs, classes across ALL indexed public codebases (e.g. new, Engine, Future, Start)..." autocomplete="off">
+            </div>
+            <div class="symbol-controls-right">
+              <select id="symbol-type-filter" class="omni-select-mini">
+                <option value="all">All Types</option>
+                <option value="function">Functions & Methods</option>
+                <option value="struct">Structs & Classes</option>
+                <option value="trait">Traits & Interfaces</option>
+                <option value="enum">Enums & Types</option>
+              </select>
+              <button class="btn-primary-action" id="btn-exec-symbol-search">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                <span>Search Symbols</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="symbols-results-grid" id="symbols-results-container">
+            <div style="grid-column: 1 / -1; padding: 60px 20px; text-align: center; color: var(--text-muted);">
+              <h3 style="font-size: 14px; font-weight: 600; color: var(--text-primary); margin-bottom: 6px;">Omni-Symbol Cross-Repository Search</h3>
+              <p style="font-size: 12px;">Type any function name, struct, or interface above to search through AST tokens across thousands of codebases.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= 4. POLYGLOT MATRIX ================= -->
+      <section class="tab-pane" id="pane-comparator">
+        <div class="comparator-workspace">
+          <div class="comparator-top-bar">
+            <div class="comparator-info-titles">
+              <h2>Polyglot Algorithm Comparator</h2>
+              <p>Compare implementation patterns across compiled and interpreted languages.</p>
+            </div>
+            
+            <div class="sort-group">
+              <span class="sort-label-text">Algorithm:</span>
+              <select id="comparator-algo-select" class="omni-select">
+                <!-- Populated dynamically -->
+              </select>
+            </div>
+          </div>
+
+          <!-- Polyglot Matrix Cards -->
+          <div class="comparator-grid-view" id="comparator-matrix-container">
+            <!-- Populated dynamically -->
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= 5. OBSIDIAN-STYLE NEURAL UNIVERSE CLUSTER ================= -->
+      <section class="tab-pane" id="pane-graph">
+        <div class="graph-workspace">
+          <div class="graph-top-nav">
+            <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+              <select id="cluster-mode-select" class="omni-select-mini" style="font-weight: 600;">
+                <option value="universe">🌌 Galaxy Universe (All 2,300+ Repos)</option>
+                <option value="repository">🏛️ Target Repository Architecture</option>
+              </select>
+              <select id="graph-repo-select" class="omni-select-mini">
+                <!-- Options -->
+              </select>
+              <input type="text" id="cluster-search-input" placeholder="Highlight node..." class="omni-input" style="width: 140px; padding: 3px 8px; font-size: 11px;">
+            </div>
+
+            <div class="stream-toolbar-right">
+              <span class="stream-match-count" id="graph-node-count">Nodes: 0</span>
+              <span class="stream-match-count" id="graph-edge-count">Edges: 0</span>
+              <button class="btn-action-pill" id="btn-reset-graph-view">Reset View</button>
+            </div>
+          </div>
+
+          <div class="graph-surface-box" id="graph-canvas-wrapper">
+            <canvas id="architecture-canvas"></canvas>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= 6. HARVESTER MISSION CONTROL ================= -->
+      <section class="tab-pane" id="pane-crawler">
+        <div class="mission-workspace">
+          
+          <!-- Telemetry Status Tiles -->
+          <div class="mission-stats-strip">
+            <div class="mission-tile">
+              <span class="mission-tile-label">HARVESTER PIPELINE</span>
+              <div class="mission-tile-num green" id="telemetry-crawler-status">1,000+ REPOS/MIN</div>
+              <span class="storage-sub-note">16 Parallel Ingestion Workers</span>
+            </div>
+            <div class="mission-tile">
+              <span class="mission-tile-label">TOTAL REPOSITORIES</span>
+              <div class="mission-tile-num" id="telemetry-total-repos">--</div>
+              <span class="storage-sub-note">Sovereign Local Index</span>
+            </div>
+            <div class="mission-tile">
+              <span class="mission-tile-label">SOURCE FILES</span>
+              <div class="mission-tile-num" id="telemetry-total-files">--</div>
+              <span class="storage-sub-note">Parsed with AST tables</span>
+            </div>
+            <div class="mission-tile">
+              <span class="mission-tile-label">LINES OF CODE</span>
+              <div class="mission-tile-num" id="telemetry-total-sloc">--</div>
+              <span class="storage-sub-note">Aggregated SLOC</span>
+            </div>
+          </div>
+
+          <!-- Dual Operation Panels -->
+          <div class="mission-split-view">
+            <div class="mission-form-panel">
+              <span class="filter-title">Manual Ingestion</span>
+
+              <div class="mission-method-card">
+                <span class="storage-sub-note" style="font-weight: 600; color: var(--text-primary);">Git Remote URL</span>
+                <div style="display: flex; gap: 6px; margin-top: 4px;">
+                  <input type="text" id="input-git-url" placeholder="https://github.com/rust-lang/rust.git" class="omni-input">
+                  <button class="btn-primary-action" id="btn-enqueue-git">Index</button>
+                </div>
+              </div>
+
+              <div class="mission-method-card">
+                <span class="storage-sub-note" style="font-weight: 600; color: var(--text-primary);">Direct Forge Scraper</span>
+                <div style="display: flex; gap: 6px; margin-top: 4px;">
+                  <input type="text" id="input-forge-repo" placeholder="owner/repo (e.g. torvalds/linux)" class="omni-input">
+                  <button class="btn-primary-action" id="btn-enqueue-forge">Scrape</button>
+                </div>
+              </div>
+
+              <div class="mission-method-card">
+                <span class="storage-sub-note" style="font-weight: 600; color: var(--text-primary);">Local Folder Path</span>
+                <div style="display: flex; gap: 6px; margin-top: 4px;">
+                  <input type="text" id="input-local-path" placeholder="C:\Users\...\my-project" class="omni-input">
+                  <button class="btn-primary-action" id="btn-enqueue-local">Scan</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="mission-log-box">
+              <div class="storage-panel-head">
+                <h3>REAL-TIME LOG FEED</h3>
+                <button class="btn-text-action" id="btn-clear-logs">Clear</button>
+              </div>
+              <div class="mission-log-output" id="crawler-log-feed">
+                <div style="color: var(--text-muted);"><span style="color: var(--text-faint);">[SYSTEM]</span> Harvester active at 1,000+ repos/min.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- MODAL: Command Palette (Ctrl+K) -->
+    <div class="palette-modal-backdrop" id="palette-modal-overlay" style="display: none;">
+      <div class="palette-window">
+        <div class="palette-search-row">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+          <input type="text" id="palette-search-input" placeholder="Jump to repository, language, or algorithm..." autocomplete="off">
+          <kbd class="kbd-tag">ESC</kbd>
+        </div>
+        <div class="palette-list" id="palette-results-container">
+          <!-- Injected dynamically -->
+        </div>
+      </div>
+    </div>
+
+    <!-- MODAL: Code Health & Security Analysis -->
+    <div class="modal-overlay" id="security-modal-overlay" style="display: none;">
+      <div class="modal-dialog">
+        <div class="modal-header">
+          <h3>
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+            <span>Codebase Health & Security Audit</span>
+          </h3>
+          <button class="btn-modal-close" id="btn-security-modal-close">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+          </button>
+        </div>
+        <div class="modal-body" id="security-modal-body">
+          <div style="padding: 20px; text-align: center; color: var(--text-muted);">Running static analysis on indexed files...</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- MODAL: Index Codebase Dialog -->
+    <div class="modal-overlay" id="ingest-modal-overlay" style="display: none;">
+      <div class="modal-dialog">
+        <div class="modal-header">
+          <h3>
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+            <span>Index Public Codebase</span>
+          </h3>
+          <button class="btn-modal-close" id="btn-modal-close">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+          </button>
+        </div>
+        <div class="modal-body">
+          <p style="font-size: 12px; color: var(--text-secondary);">Provide any public Git URL or local folder path to index it into OmniCode immediately without API tokens:</p>
+          <div class="modal-field">
+            <label>Git Remote URL / Local Directory Path</label>
+            <input type="text" id="modal-input-url" placeholder="https://github.com/owner/repository.git" class="omni-input">
+          </div>
+          <div class="modal-footer">
+            <button class="btn-secondary" id="btn-modal-cancel">Cancel</button>
+            <button class="btn-primary-action" id="btn-modal-submit">Start Indexing</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Toast Notification Container -->
+    <div id="toast-container" class="toast-container" aria-live="polite" aria-atomic="true"></div>
+  </div>
+
+  <!-- Client-Side Modules -->
+  <script src="js/searchEngine.js"></script>
+  <script src="js/repoViewer.js"></script>
+  <script src="js/comparator.js"></script>
+  <script src="js/graphVisualizer.js"></script>
+  <script src="js/crawlerConsole.js"></script>
+  <script src="js/app.js"></script>
+  <script>
+    // Dynamic SEO: Set canonical & OG URLs to actual deployed domain
+    (function() {
+      var base = window.location.origin;
+      var canon = document.getElementById('canonical-link');
+      var ogUrl = document.getElementById('og-url');
+      var ogImg = document.getElementById('og-image');
+      if (canon) canon.href = base + '/';
+      if (ogUrl) ogUrl.content = base + '/';
+      if (ogImg) ogImg.content = base + '/assets/logo.jpg';
+    })();
+  </script>
+</body>
+</html>
