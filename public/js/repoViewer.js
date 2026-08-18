@@ -11,6 +11,8 @@ class OmniRepoViewer {
     this.dom = {
       repoSelect: document.getElementById('viewer-repo-select'),
       officialGitLink: document.getElementById('btn-official-git-link'),
+      btnOpenVsCodeWeb: document.getElementById('btn-open-vscode-web'),
+      btnOpenGitpod: document.getElementById('btn-open-gitpod'),
       btnQuickClone: document.getElementById('btn-quick-clone'),
       treeList: document.getElementById('viewer-tree-list'),
       fileCount: document.getElementById('viewer-file-count'),
@@ -24,6 +26,20 @@ class OmniRepoViewer {
       btnCopyCode: document.getElementById('btn-copy-code'),
       lineNumbers: document.getElementById('editor-line-numbers'),
       codeContent: document.getElementById('editor-code-content'),
+      
+      // Segmented Sidebar Tabs
+      segTree: document.getElementById('seg-btn-tree'),
+      segSymbols: document.getElementById('seg-btn-symbols'),
+      segArch: document.getElementById('seg-btn-arch'),
+      paneTree: document.getElementById('studio-pane-tree'),
+      paneSymbols: document.getElementById('studio-pane-symbols'),
+      paneArch: document.getElementById('studio-pane-arch'),
+
+      // Architecture Inspector elements
+      archGrade: document.getElementById('arch-grade'),
+      archComplexityDesc: document.getElementById('arch-complexity-desc'),
+      archAlgoClass: document.getElementById('arch-algo-class'),
+      archFunctionList: document.getElementById('arch-function-list'),
       
       // Dual mode elements
       btnModeCode: document.getElementById('btn-mode-code'),
@@ -44,6 +60,26 @@ class OmniRepoViewer {
         }
       });
     }
+
+    // Sidebar Segment Switcher (Files / Symbols / Architecture)
+    const segButtons = [
+      { btn: this.dom.segTree, pane: this.dom.paneTree },
+      { btn: this.dom.segSymbols, pane: this.dom.paneSymbols },
+      { btn: this.dom.segArch, pane: this.dom.paneArch }
+    ];
+
+    segButtons.forEach(({ btn, pane }) => {
+      if (btn && pane) {
+        btn.addEventListener('click', () => {
+          segButtons.forEach(s => {
+            if (s.btn) s.btn.classList.remove('active');
+            if (s.pane) s.pane.style.display = 'none';
+          });
+          btn.classList.add('active');
+          pane.style.display = 'block';
+        });
+      }
+    });
 
     if (this.dom.btnQuickClone) {
       this.dom.btnQuickClone.addEventListener('click', () => {
@@ -98,10 +134,21 @@ class OmniRepoViewer {
     this.dom.breadcrumbRepo.textContent = repo.name;
     
     // Update Direct GitHub link
-    const gitUrl = repo.gitUrl || `https://github.com/${repo.fullName}.git`;
+    const fullName = repo.fullName || repo.name;
+    const gitUrl = repo.gitUrl || `https://github.com/${fullName}.git`;
     const webUrl = gitUrl.replace(/\.git$/, '');
     this.dom.officialGitLink.href = webUrl;
-    this.dom.officialGitLink.title = `View ${repo.fullName} on GitHub`;
+    this.dom.officialGitLink.title = `View ${fullName} on GitHub`;
+
+    // Update Web IDE Links
+    if (this.dom.btnOpenVsCodeWeb) {
+      this.dom.btnOpenVsCodeWeb.href = `https://github.dev/${fullName}`;
+      this.dom.btnOpenVsCodeWeb.title = `Open ${fullName} in VS Code Web (github.dev)`;
+    }
+    if (this.dom.btnOpenGitpod) {
+      this.dom.btnOpenGitpod.href = `https://gitpod.io/#https://github.com/${fullName}`;
+      this.dom.btnOpenGitpod.title = `Launch ${fullName} dev environment in Gitpod`;
+    }
 
     // Populate file count
     const files = repo.files || [];
@@ -187,8 +234,65 @@ class OmniRepoViewer {
     // Render Symbols
     this.renderSymbols(file.symbols || []);
 
+    // Render Architecture & AST Analysis
+    this.renderArchitecture(file);
+
     // Render Code & Line Numbers
     this.renderCode(file.content || '', file.language);
+  }
+
+  renderArchitecture(file) {
+    if (!this.dom.archGrade) return;
+
+    const comp = file.complexity || 1;
+    const lines = file.codeLines || 10;
+    const symbols = file.symbols || [];
+
+    // Grade calculation
+    let grade = 'A+';
+    let desc = 'Clean, modular, low cognitive branching';
+    let algoClass = 'O(1) Constant / O(N) Sequential';
+
+    if (comp > 25 || lines > 500) {
+      grade = 'C';
+      desc = 'High branching complexity. Consider decomposing routines.';
+      algoClass = 'O(N²) Nested Iteration';
+    } else if (comp > 12 || lines > 200) {
+      grade = 'B+';
+      desc = 'Moderate cyclomatic branching. Production solid.';
+      algoClass = 'O(N log N) Divide & Conquer';
+    } else if (comp > 6) {
+      grade = 'A';
+      desc = 'Very maintainable, standard control flow.';
+      algoClass = 'O(N) Linear Scan';
+    }
+
+    this.dom.archGrade.textContent = grade;
+    this.dom.archGrade.style.color = grade.startsWith('A') ? 'var(--accent-emerald)' : (grade.startsWith('B') ? 'var(--accent-cyan)' : 'var(--accent-amber)');
+    if (this.dom.archComplexityDesc) this.dom.archComplexityDesc.textContent = desc;
+    if (this.dom.archAlgoClass) this.dom.archAlgoClass.textContent = algoClass;
+
+    // Functions list
+    if (this.dom.archFunctionList) {
+      const funcs = symbols.filter(s => s.type === 'function' || s.type === 'method' || s.type === 'class' || s.type === 'struct');
+      if (funcs.length === 0) {
+        this.dom.archFunctionList.innerHTML = '<div style="font-size: 11px; color: var(--text-muted); padding: 4px;">No top-level functions in this file.</div>';
+      } else {
+        this.dom.archFunctionList.innerHTML = funcs.slice(0, 15).map(fn => `
+          <div class="arch-func-item" data-line="${fn.line || 1}">
+            <span>${fn.type === 'class' || fn.type === 'struct' ? '🏛️' : '⚡'} ${fn.name}</span>
+            <span class="arch-func-line">L${fn.line || 1}</span>
+          </div>
+        `).join('');
+
+        this.dom.archFunctionList.querySelectorAll('.arch-func-item').forEach(el => {
+          el.addEventListener('click', () => {
+            const line = parseInt(el.getAttribute('data-line'), 10) || 1;
+            this.scrollToLine(line);
+          });
+        });
+      }
+    }
   }
 
   renderSymbols(symbols) {

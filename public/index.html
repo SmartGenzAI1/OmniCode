@@ -135,6 +135,17 @@
           <span>GitHub</span>
         </a>
 
+        <!-- Theme Switcher -->
+        <button class="btn-command-search" id="btn-toggle-theme" title="Switch Theme (Obsidian / Matrix / Tokyo / Dracula)">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+          <span id="theme-label-text">Theme</span>
+        </button>
+
+        <!-- Shortcuts HUD Button -->
+        <button class="btn-command-search" id="btn-open-shortcuts" title="Keyboard Shortcuts (?)">
+          <kbd class="kbd-tag" style="font-size: 11px; font-weight: 700;">?</kbd>
+        </button>
+
         <button class="btn-command-search" id="btn-open-palette" title="Quick Jump (Ctrl+K / ⌘K)">
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
           <span>Search</span>
@@ -298,9 +309,21 @@
                 </button>
               </div>
 
+              <!-- Trending Velocity Radar Bar -->
+              <div class="trending-radar-bar">
+                <span class="radar-title">⚡ RADAR:</span>
+                <button class="radar-pill active" data-filter="all">🌐 All (2,500+)</button>
+                <button class="radar-pill" data-filter="legends">🌟 100K+ Legends</button>
+                <button class="radar-pill" data-filter="ai">🤖 AI & LLM Core</button>
+                <button class="radar-pill" data-filter="rust">🦀 Pure Rust</button>
+                <button class="radar-pill" data-filter="go">🐹 Cloud Go</button>
+                <button class="radar-pill" data-filter="systems">⚡ Systems & OS</button>
+                <button class="radar-pill" data-filter="web">🚀 Modern Web</button>
+              </div>
+
               <!-- Filter Operator Chips -->
               <div class="filter-chips-row">
-                <span class="chip-caption">Quick Filters:</span>
+                <span class="chip-caption">Filter syntax:</span>
                 <button class="query-chip" data-query="lang:rust">lang:rust</button>
                 <button class="query-chip" data-query="lang:go">lang:go</button>
                 <button class="query-chip" data-query="lang:zig">lang:zig</button>
@@ -325,9 +348,10 @@
                     </button>
                   </div>
 
-                  <div class="sort-group">
+                  <!-- Sorter -->
+                  <div class="stream-sort-controls">
                     <span class="sort-label-text">Sort:</span>
-                    <select id="sort-by-select" class="omni-select-mini">
+                    <select id="sort-by-select" class="omni-select-mini" aria-label="Sort repositories">
                       <option value="stars">Stars</option>
                       <option value="sloc">Lines of Code</option>
                       <option value="complexity">Complexity</option>
@@ -340,8 +364,8 @@
               </div>
             </div>
 
-            <!-- Repository Cards Container -->
-            <div class="repo-cards-container" id="repo-cards-container">
+            <!-- Repositories Grid Display -->
+            <div class="repo-cards-container" id="repo-cards-container" role="feed" aria-busy="false">
               <!-- Dynamically populated -->
             </div>
 
@@ -349,24 +373,32 @@
         </div>
       </section>
 
-      <!-- ================= 2. CODE STUDIO ================= -->
+      <!-- ================= 2. CODE STUDIO & AST INSPECTOR ================= -->
       <section class="tab-pane" id="pane-viewer">
         <div class="studio-layout">
           
-          <!-- Left Studio Sidebar: File Tree & AST Symbols -->
+          <!-- Left Studio Sidebar -->
           <aside class="studio-sidebar-pane">
-            <div class="studio-repo-selector-row">
-              <span class="studio-label-heading">Active Repository</span>
+            <div class="studio-repo-picker">
+              <label for="viewer-repo-select">Target Codebase</label>
               <select id="viewer-repo-select" class="omni-select">
                 <!-- Options -->
               </select>
             </div>
 
-            <!-- Git Toolbar -->
+            <!-- Git & Cloud Web IDE Launch Matrix -->
             <div class="studio-git-toolbar">
-              <a href="#" target="_blank" rel="noopener noreferrer" class="btn-forge-external" id="btn-official-git-link">
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
-                <span>GitHub Source</span>
+              <a href="#" target="_blank" rel="noopener noreferrer" class="btn-forge-external" id="btn-official-git-link" title="Open on GitHub">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path fill-rule="evenodd" clip-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.53 1.032 1.53 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"></path></svg>
+                <span>GitHub</span>
+              </a>
+              <a href="#" target="_blank" rel="noopener noreferrer" class="btn-forge-external ide-btn" id="btn-open-vscode-web" title="Launch instant VS Code in browser (github.dev)">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg>
+                <span>VS Code</span>
+              </a>
+              <a href="#" target="_blank" rel="noopener noreferrer" class="btn-forge-external ide-btn" id="btn-open-gitpod" title="Open in Gitpod Cloud Container">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polygon points="10 8 16 12 10 16 10 8"></polygon></svg>
+                <span>Gitpod</span>
               </a>
               <button class="btn-clone-snippet" id="btn-quick-clone" title="Copy git clone command">
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
@@ -374,23 +406,42 @@
               </button>
             </div>
 
+            <!-- Sidebar Navigation Tabs: Files / Symbols / Architecture -->
+            <div class="studio-nav-segmented">
+              <button class="studio-seg-btn active" data-pane="tree" id="seg-btn-tree">Files (<span id="viewer-file-count">0</span>)</button>
+              <button class="studio-seg-btn" data-pane="symbols" id="seg-btn-symbols">AST (<span id="viewer-symbol-count">0</span>)</button>
+              <button class="studio-seg-btn" data-pane="arch" id="seg-btn-arch">⚡ Architecture</button>
+            </div>
+
             <!-- File Hierarchy Tree -->
-            <div class="studio-tree-pane">
-              <div class="pane-section-header">
-                <span>SOURCE FILES (<span id="viewer-file-count">0</span>)</span>
-              </div>
-              <div class="pane-scrollable-list" id="viewer-tree-list">
-                <!-- Tree items -->
-              </div>
+            <div class="studio-sidebar-section active" id="studio-pane-tree">
+              <div class="pane-scrollable-list" id="viewer-tree-list"></div>
             </div>
 
             <!-- AST Symbol Inspector -->
-            <div class="studio-symbols-pane">
-              <div class="pane-section-header">
-                <span>AST SYMBOLS (<span id="viewer-symbol-count">0</span>)</span>
-              </div>
-              <div class="pane-scrollable-list" id="viewer-symbol-list">
-                <!-- Symbols -->
+            <div class="studio-sidebar-section" id="studio-pane-symbols" style="display: none;">
+              <div class="pane-scrollable-list" id="viewer-symbol-list"></div>
+            </div>
+
+            <!-- Architecture & AST Logic Inspector -->
+            <div class="studio-sidebar-section" id="studio-pane-arch" style="display: none;">
+              <div class="arch-inspector-body" id="viewer-arch-body">
+                <div class="arch-card">
+                  <div class="arch-card-header">Complexity Grade</div>
+                  <div class="arch-grade-badge" id="arch-grade">A+</div>
+                  <div class="arch-sub-text" id="arch-complexity-desc">Low cognitive overhead, clean modular logic</div>
+                </div>
+                <div class="arch-card">
+                  <div class="arch-card-header">Algorithmic Class</div>
+                  <div class="arch-algo-class" id="arch-algo-class">O(1) / O(N)</div>
+                  <div class="arch-sub-text">Sequential iteration and deterministic branching</div>
+                </div>
+                <div class="arch-card">
+                  <div class="arch-card-header">AST Functions & Entry Points</div>
+                  <div class="arch-function-jump-list" id="arch-function-list">
+                    <span style="font-size: 11px; color: var(--text-muted);">Select a file to inspect AST functions</span>
+                  </div>
+                </div>
               </div>
             </div>
           </aside>
@@ -732,6 +783,34 @@
             <button class="btn-secondary" id="btn-copy-raw-file">📋 Copy Raw Code</button>
             <button class="btn-primary-action" id="btn-open-in-studio">⚡ Open in Code Studio</button>
           </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- MODAL: Developer Keyboard Shortcuts Cheat Sheet -->
+    <div class="modal-overlay" id="shortcuts-modal-overlay" style="display: none;">
+      <div class="modal-dialog" style="max-width: 540px;">
+        <div class="modal-header">
+          <h3>
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"></rect><path d="M6 8h.001M10 8h.001M14 8h.001M18 8h.001M8 12h.001M12 12h.001M16 12h.001M6 16h12"></path></svg>
+            <span>Developer Keyboard Shortcuts</span>
+          </h3>
+          <button class="btn-modal-close" id="btn-close-shortcuts">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+          </button>
+        </div>
+        <div class="modal-body" style="display: flex; flex-direction: column; gap: 8px;">
+          <div class="shortcut-row"><span>Global Search / Jump Palette</span><kbd class="kbd-tag">⌘K / Ctrl+K</kbd></div>
+          <div class="shortcut-row"><span>Cycle Theme (Obsidian / Matrix / Tokyo / Dracula)</span><kbd class="kbd-tag">T</kbd></div>
+          <div class="shortcut-row"><span>Toggle Keybindings Help</span><kbd class="kbd-tag">?</kbd></div>
+          <div class="shortcut-row"><span>Explore Codebases Tab</span><kbd class="kbd-tag">1</kbd></div>
+          <div class="shortcut-row"><span>Code Studio & AST Tab</span><kbd class="kbd-tag">2</kbd></div>
+          <div class="shortcut-row"><span>Global Symbols Tab</span><kbd class="kbd-tag">3</kbd></div>
+          <div class="shortcut-row"><span>Polyglot Matrix Tab</span><kbd class="kbd-tag">4</kbd></div>
+          <div class="shortcut-row"><span>Obsidian Galaxy Cluster Tab</span><kbd class="kbd-tag">5</kbd></div>
+          <div class="shortcut-row"><span>Raw Files Catalog Tab</span><kbd class="kbd-tag">6</kbd></div>
+          <div class="shortcut-row"><span>Harvester Mission Control Tab</span><kbd class="kbd-tag">7</kbd></div>
+          <div class="shortcut-row"><span>Close Any Open Modal</span><kbd class="kbd-tag">Esc</kbd></div>
         </div>
       </div>
     </div>

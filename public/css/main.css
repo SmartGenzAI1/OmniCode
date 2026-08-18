@@ -1186,3 +1186,251 @@ input:focus-visible, select:focus-visible {
   max-height: 520px;
   white-space: pre;
 }
+
+/* ================= 8. DEVELOPER THEMES ================= */
+[data-theme="matrix"] {
+  --bg-app: #030a04;
+  --bg-header: #061208;
+  --bg-sidebar: #050e06;
+  --bg-card: #08160a;
+  --bg-card-hover: #0c2010;
+  --bg-surface: #0e2412;
+  --border-subtle: #103016;
+  --border-medium: #184822;
+  --border-active: #226630;
+  --border-focus: #00ff66;
+  --accent-cyan: #00ff66;
+  --accent-cyan-subtle: rgba(0, 255, 102, 0.12);
+  --accent-emerald: #00cc55;
+  --text-primary: #e6ffe6;
+  --text-secondary: #88cc99;
+}
+
+[data-theme="tokyo"] {
+  --bg-app: #0d0f18;
+  --bg-header: #121422;
+  --bg-sidebar: #10121d;
+  --bg-card: #161828;
+  --bg-card-hover: #1c1f34;
+  --bg-surface: #22263e;
+  --border-subtle: #242842;
+  --border-medium: #303558;
+  --border-active: #484f80;
+  --border-focus: #7aa2f7;
+  --accent-cyan: #7dcfff;
+  --accent-cyan-subtle: rgba(125, 207, 255, 0.12);
+  --accent-emerald: #9ece6a;
+  --accent-ruby: #f7768e;
+  --text-primary: #c0caf5;
+  --text-secondary: #9aa5ce;
+}
+
+[data-theme="dracula"] {
+  --bg-app: #181a26;
+  --bg-header: #1e2030;
+  --bg-sidebar: #1b1d2c;
+  --bg-card: #222538;
+  --bg-card-hover: #2a2e46;
+  --bg-surface: #323754;
+  --border-subtle: #313652;
+  --border-medium: #42486e;
+  --border-active: #5d669c;
+  --border-focus: #bd93f9;
+  --accent-cyan: #8be9fd;
+  --accent-cyan-subtle: rgba(139, 233, 253, 0.12);
+  --accent-emerald: #50fa7b;
+  --accent-amber: #f1fa8c;
+  --accent-ruby: #ff5555;
+  --text-primary: #f8f8f2;
+  --text-secondary: #6272a4;
+}
+
+/* ================= 9. TRENDING RADAR BAR ================= */
+.trending-radar-bar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  background-color: var(--bg-surface);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-subtle);
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.trending-radar-bar::-webkit-scrollbar {
+  display: none;
+}
+
+.radar-title {
+  font-size: 10.5px;
+  font-weight: 800;
+  font-family: var(--font-mono);
+  color: var(--accent-amber);
+  white-space: nowrap;
+  letter-spacing: 0.5px;
+}
+
+.radar-pill {
+  padding: 3px 8px;
+  font-size: 11px;
+  font-weight: 600;
+  border-radius: 4px;
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-medium);
+  color: var(--text-secondary);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all var(--transition-fast);
+}
+
+.radar-pill:hover {
+  color: var(--text-primary);
+  border-color: var(--border-active);
+}
+
+.radar-pill.active {
+  background: var(--accent-cyan-subtle);
+  border-color: var(--accent-cyan);
+  color: var(--accent-cyan);
+  font-weight: 700;
+}
+
+/* ================= 10. CODE STUDIO ARCHITECTURE INSPECTOR ================= */
+.studio-nav-segmented {
+  display: flex;
+  background-color: var(--bg-app);
+  padding: 3px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-subtle);
+  margin: 6px 10px;
+  gap: 2px;
+}
+
+.studio-seg-btn {
+  flex: 1;
+  padding: 4px 6px;
+  font-size: 10.5px;
+  font-weight: 600;
+  border-radius: 4px;
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.studio-seg-btn:hover {
+  color: var(--text-primary);
+}
+
+.studio-seg-btn.active {
+  background-color: var(--bg-surface);
+  color: var(--accent-cyan);
+  font-weight: 700;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.arch-inspector-body {
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  overflow-y: auto;
+  height: 100%;
+}
+
+.arch-card {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-medium);
+  border-radius: var(--radius-sm);
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.arch-card-header {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+}
+
+.arch-grade-badge {
+  font-size: 22px;
+  font-weight: 900;
+  color: var(--accent-emerald);
+  font-family: var(--font-mono);
+}
+
+.arch-algo-class {
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--accent-cyan);
+  font-family: var(--font-mono);
+}
+
+.arch-sub-text {
+  font-size: 10.5px;
+  color: var(--text-secondary);
+  line-height: 1.3;
+}
+
+.arch-function-jump-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: 4px;
+}
+
+.arch-func-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 4px 6px;
+  background-color: var(--bg-surface);
+  border-radius: 3px;
+  border: 1px solid var(--border-subtle);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  font-family: var(--font-mono);
+  font-size: 11px;
+}
+
+.arch-func-item:hover {
+  border-color: var(--accent-cyan);
+  color: var(--accent-cyan);
+}
+
+.arch-func-line {
+  font-size: 9.5px;
+  color: var(--text-muted);
+}
+
+/* ================= 11. SHORTCUTS HUD ================= */
+.shortcut-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 10px;
+  background-color: var(--bg-card);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-subtle);
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.btn-forge-external.ide-btn {
+  background: hsla(210, 90%, 55%, 0.1);
+  border-color: hsla(210, 90%, 55%, 0.25);
+  color: #7dcfff;
+}
+
+.btn-forge-external.ide-btn:hover {
+  background: #7dcfff;
+  color: #0b0f19;
+}
+

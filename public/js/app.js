@@ -31,6 +31,10 @@ class OmniApp {
     this.crawlerConsole = new OmniCrawlerConsole();
     this.rawFilesViewer = new OmniRawFilesViewer();
 
+    // Theme Management
+    this.themes = ['obsidian', 'matrix', 'tokyo', 'dracula'];
+    this.currentTheme = localStorage.getItem('omnicode_theme') || 'obsidian';
+
     // DOM Elements
     this.dom = {
       brandHomeLink: document.getElementById('brand-home-link'),
@@ -39,6 +43,7 @@ class OmniApp {
       searchInput: document.getElementById('global-search-input'),
       btnClearSearch: document.getElementById('btn-clear-search'),
       queryChips: document.querySelectorAll('.query-chip'),
+      radarPills: document.querySelectorAll('.radar-pill'),
       langFilterList: document.getElementById('language-filter-list'),
       domainSelect: document.getElementById('domain-select'),
       licenseSelect: document.getElementById('license-select'),
@@ -49,6 +54,13 @@ class OmniApp {
       repoContainer: document.getElementById('repo-cards-container'),
       resultsCount: document.getElementById('results-count-text'),
       
+      // Theme Switcher & Shortcuts
+      btnToggleTheme: document.getElementById('btn-toggle-theme'),
+      themeLabelText: document.getElementById('theme-label-text'),
+      btnOpenShortcuts: document.getElementById('btn-open-shortcuts'),
+      shortcutsModalOverlay: document.getElementById('shortcuts-modal-overlay'),
+      btnCloseShortcuts: document.getElementById('btn-close-shortcuts'),
+
       // Mobile Hamburger Navigation Drawer
       btnMobileHamburger: document.getElementById('btn-mobile-hamburger'),
       mobileDrawerOverlay: document.getElementById('mobile-drawer-overlay'),
@@ -194,6 +206,68 @@ class OmniApp {
       this.renderRepoCards();
     });
 
+    // Initialize Theme
+    this.applyTheme(this.currentTheme);
+    if (this.dom.btnToggleTheme) {
+      this.dom.btnToggleTheme.addEventListener('click', () => {
+        this.cycleTheme();
+      });
+    }
+
+    // Shortcuts HUD Modal
+    if (this.dom.btnOpenShortcuts && this.dom.shortcutsModalOverlay) {
+      this.dom.btnOpenShortcuts.addEventListener('click', () => {
+        this.dom.shortcutsModalOverlay.style.display = 'flex';
+      });
+
+      if (this.dom.btnCloseShortcuts) {
+        this.dom.btnCloseShortcuts.addEventListener('click', () => {
+          this.dom.shortcutsModalOverlay.style.display = 'none';
+        });
+      }
+
+      this.dom.shortcutsModalOverlay.addEventListener('click', (e) => {
+        if (e.target === this.dom.shortcutsModalOverlay) {
+          this.dom.shortcutsModalOverlay.style.display = 'none';
+        }
+      });
+    }
+
+    // Trending Radar Pills
+    if (this.dom.radarPills) {
+      this.dom.radarPills.forEach(pill => {
+        pill.addEventListener('click', () => {
+          this.dom.radarPills.forEach(p => p.classList.remove('active'));
+          pill.classList.add('active');
+
+          const filter = pill.dataset.filter;
+          if (filter === 'all') {
+            this.dom.searchInput.value = '';
+            this.activeFilters.domain = 'all';
+            this.activeFilters.language = 'all';
+            this.activeFilters.minStars = 0;
+          } else if (filter === 'legends') {
+            this.dom.searchInput.value = 'stars:>100000';
+          } else if (filter === 'ai') {
+            this.dom.searchInput.value = 'domain:"AI & Machine Learning"';
+          } else if (filter === 'rust') {
+            this.dom.searchInput.value = 'lang:rust';
+          } else if (filter === 'go') {
+            this.dom.searchInput.value = 'lang:go';
+          } else if (filter === 'systems') {
+            this.dom.searchInput.value = 'domain:"Kernels & Systems"';
+          } else if (filter === 'web') {
+            this.dom.searchInput.value = 'domain:"Web Frameworks & Runtimes"';
+          }
+
+          this.dom.btnClearSearch.style.display = this.dom.searchInput.value ? 'block' : 'none';
+          this.currentPage = 1;
+          this.switchTab('explorer');
+          this.renderRepoCards();
+        });
+      });
+    }
+
     // Quick Query Chips
     this.dom.queryChips.forEach(chip => {
       chip.addEventListener('click', () => {
@@ -268,12 +342,25 @@ class OmniApp {
       closeModal();
     });
 
-    // Global Keybindings
+    // Global Developer Keybindings
     window.addEventListener('keydown', (e) => {
+      const inInput = ['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement?.tagName);
       if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
         e.preventDefault();
         this.openCommandPalette();
-      } else if (e.key === '/' && document.activeElement !== this.dom.searchInput && document.activeElement !== this.dom.paletteSearchInput && document.activeElement !== this.dom.symbolSearchInput) {
+      } else if (e.key === '?' && !inInput) {
+        e.preventDefault();
+        if (this.dom.shortcutsModalOverlay) {
+          const isShown = this.dom.shortcutsModalOverlay.style.display === 'flex';
+          this.dom.shortcutsModalOverlay.style.display = isShown ? 'none' : 'flex';
+        }
+      } else if (e.key.toLowerCase() === 't' && !inInput) {
+        e.preventDefault();
+        this.cycleTheme();
+      } else if (['1', '2', '3', '4', '5', '6', '7'].includes(e.key) && !inInput) {
+        const tabMap = { '1': 'explorer', '2': 'viewer', '3': 'symbols', '4': 'comparator', '5': 'graph', '6': 'rawfiles', '7': 'crawler' };
+        this.switchTab(tabMap[e.key]);
+      } else if (e.key === '/' && !inInput) {
         e.preventDefault();
         this.switchTab('explorer');
         this.dom.searchInput.focus();
@@ -282,8 +369,27 @@ class OmniApp {
         this.closeCommandPalette();
         if (this.dom.securityModalOverlay) this.dom.securityModalOverlay.style.display = 'none';
         if (this.dom.mobileDrawerOverlay) this.dom.mobileDrawerOverlay.style.display = 'none';
+        if (this.dom.shortcutsModalOverlay) this.dom.shortcutsModalOverlay.style.display = 'none';
       }
     });
+  }
+
+  applyTheme(theme) {
+    this.currentTheme = theme;
+    document.documentElement.setAttribute('data-theme', theme);
+    localStorage.setItem('omnicode_theme', theme);
+    if (this.dom.themeLabelText) {
+      const names = { obsidian: 'Obsidian', matrix: 'Matrix', tokyo: 'Tokyo', dracula: 'Dracula' };
+      this.dom.themeLabelText.textContent = names[theme] || 'Theme';
+    }
+  }
+
+  cycleTheme() {
+    const idx = this.themes.indexOf(this.currentTheme);
+    const nextTheme = this.themes[(idx + 1) % this.themes.length];
+    this.applyTheme(nextTheme);
+    const names = { obsidian: '🌌 Obsidian Dark', matrix: '🟢 Matrix Green', tokyo: '🟣 Tokyo Neon', dracula: '🧛 Dracula Pro' };
+    this.showToast(`Theme: ${names[nextTheme]}`, 'info');
   }
 
   setLayoutMode(mode) {
@@ -802,6 +908,9 @@ class OmniApp {
           </div>
 
           <div class="footer-actions-group">
+            <a href="https://github.dev/${repo.fullName}" target="_blank" rel="noopener noreferrer" class="btn-repo-tool ide-pill" style="color: #7dcfff; text-decoration: none;" title="Open in VS Code Web (github.dev)">
+              <span>IDE</span>
+            </a>
             <button class="btn-repo-tool btn-inspect-studio" data-repoid="${repo.id}">
               <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align: middle; margin-right: 2px;"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
               <span>Inspect</span>
