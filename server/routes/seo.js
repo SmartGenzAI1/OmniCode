@@ -128,6 +128,12 @@ Sitemap: ${baseUrl}/sitemap.xml
     res.json(manifest);
   });
 
+  // Google Site Verification File Fallback
+  router.get(['/googlezfi0SQfCZoenZcVVjw3EWg-VlwQUjHi9NTNCDddscUE.html', '/google-site-verification.html'], (req, res) => {
+    res.setHeader('Content-Type', 'text/html');
+    res.send('google-site-verification: googlezfi0SQfCZoenZcVVjw3EWg-VlwQUjHi9NTNCDddscUE.html');
+  });
+
   // 4. SSR Meta Pages for Search Engine Bots
   //    When Googlebot visits /repo/facebook/react, it gets full HTML with OG tags.
   //    Real users get the SPA which handles it client-side.
