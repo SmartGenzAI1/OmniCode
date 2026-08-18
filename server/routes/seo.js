@@ -134,6 +134,37 @@ Sitemap: ${baseUrl}/sitemap.xml
     res.send('google-site-verification: googlezfi0SQfCZoenZcVVjw3EWg-VlwQUjHi9NTNCDddscUE.html');
   });
 
+  // 3.5 LLMs.txt for AI Agents & Machine-Readable Exploration
+  router.get('/llms.txt', (req, res) => {
+    const host = req.get('host') || 'localhost:3000';
+    const protocol = req.protocol === 'https' || req.get('x-forwarded-proto') === 'https' ? 'https' : 'http';
+    const baseUrl = `${protocol}://${host}`;
+
+    const text = `# OmniCode Sovereign Codebase Meta-Forge & Universal AST Index
+
+> OmniCode is an autonomous public codebase meta-forge indexing thousands of open-source repositories with sub-millisecond AST symbol search, polyglot algorithm comparator, and Obsidian-style neural universe cluster graphs.
+
+## Core Hubs & Interactive Engines
+
+- [Explore Codebases](${baseUrl}/explore): Sovereign repository explorer with multi-dimensional filtering across stars, languages, licenses, and domains.
+- [Code Studio & AST Inspector](${baseUrl}/studio): Deep AST syntax tree visualizer, cyclomatic complexity metrics, and code health audits.
+- [Global AST Symbol Graph](${baseUrl}/symbols): Cross-repository symbol lookup for functions, types, interfaces, and classes.
+- [Polyglot Algorithm Matrix](${baseUrl}/comparator): Side-by-side polyglot implementations of canonical computer science algorithms.
+- [Obsidian Galaxy Clusters](${baseUrl}/graph): 2D/3D physics-based neural dependency and technology cluster visualizer.
+- [Raw Source Catalog](${baseUrl}/api/features/raw-files): Direct indexed access to 100,000+ raw source files across all programming languages.
+
+## Machine-Readable Feeds & Endpoints
+
+- [Dynamic Sitemap](${baseUrl}/sitemap.xml): Complete XML sitemap indexing all sovereign codebases.
+- [Crawler Robots Policy](${baseUrl}/robots.txt): Machine crawler directives and search engine discovery rules.
+- [Public Repositories API](${baseUrl}/api/repos): JSON feed of indexed repositories with stars, SLOC, and metadata.
+- [Search Statistics API](${baseUrl}/api/search/stats): Real-time language and domain aggregation metrics.
+`;
+    res.setHeader('Content-Type', 'text/markdown; charset=utf-8');
+    res.setHeader('Cache-Control', 'public, max-age=86400');
+    res.send(text);
+  });
+
   // 4. SSR Meta Pages for Search Engine Bots
   //    When Googlebot visits /repo/facebook/react, it gets full HTML with OG tags.
   //    Real users get the SPA which handles it client-side.

@@ -20,11 +20,11 @@
   --border-active: hsl(220, 13%, 28%);
   --border-focus: hsl(200, 85%, 52%);
   
-  /* Text */
+  /* Text (WCAG AA Compliant Contrast) */
   --text-primary: hsl(0, 0%, 98%);
-  --text-secondary: hsl(220, 12%, 75%);
-  --text-muted: hsl(220, 9%, 52%);
-  --text-faint: hsl(220, 9%, 36%);
+  --text-secondary: hsl(220, 16%, 86%);
+  --text-muted: hsl(220, 16%, 74%);
+  --text-faint: hsl(220, 12%, 62%);
   
   /* Functional Accents */
   --accent-cyan: hsl(200, 85%, 52%);
@@ -49,6 +49,18 @@
   /* Animation */
   --transition-fast: 120ms ease;
   --transition-smooth: 200ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
 }
 
 * {

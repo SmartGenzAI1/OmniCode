@@ -50,7 +50,16 @@ class OmniGraphVisualizer {
       this.initStarfield();
       this.bindEvents();
       this.resize();
+    }
+  }
+
+  activate() {
+    if (!this._clusterLoaded) {
+      this._clusterLoaded = true;
       this.loadUniverseCluster();
+    } else {
+      this.resize();
+      this.startSimulation();
     }
   }
 

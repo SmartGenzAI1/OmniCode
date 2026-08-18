@@ -119,10 +119,14 @@ class OmniApp {
     this.bindSecurityAndExport();
     this.trackUniqueVisitor();
     await this.refreshGlobalIndex();
-    await this.comparator.init();
     this.handleDeepLink();
     window.addEventListener('hashchange', () => this.handleDeepLink());
     this.startLiveAutonomousPulse();
+    if (window.requestIdleCallback) {
+      requestIdleCallback(() => this.comparator.init());
+    } else {
+      setTimeout(() => this.comparator.init(), 1000);
+    }
   }
 
   async trackUniqueVisitor() {
@@ -645,11 +649,16 @@ class OmniApp {
     }
 
     if (tabName === 'graph') {
-      setTimeout(() => {
-        this.graphVisualizer.resize();
-        this.graphVisualizer.centerGraph();
-      }, 60);
-    } else if (tabName === 'rawfiles') {
+      if (this.graphVisualizer) {
+        setTimeout(() => this.graphVisualizer.activate(), 60);
+      }
+    } else {
+      if (this.graphVisualizer) {
+        this.graphVisualizer.stopSimulation();
+      }
+    }
+
+    if (tabName === 'rawfiles') {
       if (this.rawFilesViewer) {
         this.rawFilesViewer.populateRepoOptions(this.repositories);
         this.rawFilesViewer.fetchFiles();
@@ -657,6 +666,10 @@ class OmniApp {
     } else if (tabName === 'crawler') {
       if (this.crawlerConsole) {
         this.crawlerConsole.fetchInitialStats();
+      }
+    } else if (tabName === 'comparator') {
+      if (this.comparator) {
+        this.comparator.init();
       }
     }
   }
@@ -897,6 +910,8 @@ class OmniApp {
     visibleSlice.forEach(repo => {
       const card = document.createElement('div');
       card.className = 'repo-card';
+      card.setAttribute('role', 'article');
+      card.setAttribute('aria-label', `${repo.fullName} repository`);
 
       const gitUrl = repo.gitUrl || `https://github.com/${repo.fullName}.git`;
       const webUrl = gitUrl.replace(/\.git$/, '');
@@ -915,7 +930,7 @@ class OmniApp {
       card.innerHTML = `
         <div class="repo-card-head">
           <div class="repo-identity">
-            <a href="${webUrl}" target="_blank" rel="noopener noreferrer" class="repo-link" title="Open on GitHub">
+            <a href="${webUrl}" target="_blank" rel="noopener noreferrer" class="repo-link" title="Open on GitHub" aria-label="Open ${repo.fullName} on GitHub">
               <span>${repo.fullName.split('/')[0]} /</span>
               <span class="repo-name-strong">${repo.name}</span>
               <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
@@ -954,18 +969,18 @@ class OmniApp {
           </div>
 
           <div class="footer-actions-group">
-            <a href="https://github.dev/${repo.fullName}" target="_blank" rel="noopener noreferrer" class="btn-repo-tool ide-pill" style="color: #7dcfff; text-decoration: none;" title="Open in VS Code Web (github.dev)">
+            <a href="https://github.dev/${repo.fullName}" target="_blank" rel="noopener noreferrer" class="btn-repo-tool ide-pill" style="color: #7dcfff; text-decoration: none;" title="Open in VS Code Web (github.dev)" aria-label="Open ${repo.fullName} in Web IDE">
               <span>IDE</span>
             </a>
-            <button class="btn-repo-tool btn-inspect-studio" data-repoid="${repo.id}">
+            <button class="btn-repo-tool btn-inspect-studio" data-repoid="${repo.id}" aria-label="Inspect ${repo.fullName} in Code Studio">
               <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align: middle; margin-right: 2px;"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
               <span>Inspect</span>
             </button>
-            <button class="btn-repo-tool btn-copy-clone" data-giturl="${gitUrl}" title="Copy clone command">
+            <button class="btn-repo-tool btn-copy-clone" data-giturl="${gitUrl}" title="Copy clone command" aria-label="Copy Git clone command for ${repo.fullName}">
               <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align: middle; margin-right: 2px;"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
               <span>Clone</span>
             </button>
-            <button class="btn-repo-tool btn-live-sync" data-repoid="${repo.id}" title="Sync stars & forks live">
+            <button class="btn-repo-tool btn-live-sync" data-repoid="${repo.id}" title="Sync stars & forks live" aria-label="Sync metadata for ${repo.fullName}">
               <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align: middle; margin-right: 2px;"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
               <span>Sync</span>
             </button>

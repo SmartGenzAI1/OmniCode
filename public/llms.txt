@@ -1,0 +1,19 @@
+# OmniCode Sovereign Codebase Meta-Forge & Universal AST Index
+
+> OmniCode is an autonomous public codebase meta-forge indexing thousands of open-source repositories with sub-millisecond AST symbol search, polyglot algorithm comparator, and Obsidian-style neural universe cluster graphs.
+
+## Core Hubs & Interactive Engines
+
+- [Explore Codebases](https://omni-code-ten.vercel.app/explore): Sovereign repository explorer with multi-dimensional filtering across stars, languages, licenses, and domains.
+- [Code Studio & AST Inspector](https://omni-code-ten.vercel.app/studio): Deep AST syntax tree visualizer, cyclomatic complexity metrics, and code health audits.
+- [Global AST Symbol Graph](https://omni-code-ten.vercel.app/symbols): Cross-repository symbol lookup for functions, types, interfaces, and classes.
+- [Polyglot Algorithm Matrix](https://omni-code-ten.vercel.app/comparator): Side-by-side polyglot implementations of canonical computer science algorithms.
+- [Obsidian Galaxy Clusters](https://omni-code-ten.vercel.app/graph): 2D/3D physics-based neural dependency and technology cluster visualizer.
+- [Raw Source Catalog](https://omni-code-ten.vercel.app/api/features/raw-files): Direct indexed access to 100,000+ raw source files across all programming languages.
+
+## Machine-Readable Feeds & Endpoints
+
+- [Dynamic Sitemap](https://omni-code-ten.vercel.app/sitemap.xml): Complete XML sitemap indexing all sovereign codebases.
+- [Crawler Robots Policy](https://omni-code-ten.vercel.app/robots.txt): Machine crawler directives and search engine discovery rules.
+- [Public Repositories API](https://omni-code-ten.vercel.app/api/repos): JSON feed of indexed repositories with stars, SLOC, and metadata.
+- [Search Statistics API](https://omni-code-ten.vercel.app/api/search/stats): Real-time language and domain aggregation metrics.

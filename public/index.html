@@ -65,10 +65,11 @@
   }
   </script>
   
-  <!-- Typography -->
+  <!-- Typography & Performance Optimization -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
+  <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap"></noscript>
   
   <!-- Stylesheets -->
   <link rel="stylesheet" href="css/main.css">
@@ -86,8 +87,8 @@
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
         </button>
 
-        <a class="brand-container" id="brand-home-link" title="OmniCode Meta-Forge">
-          <img src="assets/logo.jpg" alt="OmniCode Logo" class="brand-img-logo" loading="lazy">
+        <a class="brand-container" id="brand-home-link" title="OmniCode Meta-Forge" aria-label="OmniCode Home">
+          <img src="assets/logo.jpg" alt="OmniCode Logo" class="brand-img-logo" width="28" height="28" fetchpriority="high">
           <span class="brand-title">OmniCode</span>
           <span class="brand-version-badge">v2.0</span>
         </a>
@@ -244,8 +245,8 @@
 
             <!-- Technical Domain -->
             <div class="filter-section">
-              <span class="filter-title">Domain</span>
-              <select id="domain-select" class="omni-select">
+              <label for="domain-select" class="filter-title">Domain</label>
+              <select id="domain-select" class="omni-select" aria-label="Filter repositories by technical domain">
                 <option value="all">All Domains</option>
                 <option value="Compilers & Languages">Compilers & Languages</option>
                 <option value="Kernels & Systems">Kernels & Systems</option>
@@ -261,8 +262,8 @@
 
             <!-- License Filter -->
             <div class="filter-section">
-              <span class="filter-title">License</span>
-              <select id="license-select" class="omni-select">
+              <label for="license-select" class="filter-title">License</label>
+              <select id="license-select" class="omni-select" aria-label="Filter repositories by open source license">
                 <option value="all">All Licenses</option>
                 <option value="MIT">MIT License</option>
                 <option value="Apache-2.0">Apache 2.0</option>
@@ -277,10 +278,10 @@
             <!-- Min Stars Slider -->
             <div class="filter-section">
               <div class="slider-top-row">
-                <span class="filter-title">Min Stars</span>
+                <label for="stars-range" class="filter-title">Min Stars</label>
                 <span id="star-count-display" class="slider-val-tag">0</span>
               </div>
-              <input type="range" id="stars-range" min="0" max="100000" step="5000" value="0" class="omni-range">
+              <input type="range" id="stars-range" min="0" max="100000" step="5000" value="0" class="omni-range" aria-label="Filter repositories by minimum stars">
             </div>
 
             <!-- Storage Overview Box -->
@@ -312,27 +313,28 @@
             <!-- Search & Controls Bar -->
             <div class="explorer-control-bar">
               <div class="search-bar-row">
+                <label for="global-search-input" class="sr-only">Search codebases, symbols, and domains</label>
                 <svg class="search-icon-svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-                <input type="text" id="global-search-input" placeholder="Search codebases, symbols, domains or use operators (e.g. lang:rust stars:>50k domain:AI)..." autocomplete="off" aria-label="Search codebases">
-                <button class="btn-search-clear" id="btn-clear-search" style="display: none;">
+                <input type="text" id="global-search-input" placeholder="Search codebases, symbols, domains or use operators (e.g. lang:rust stars:>50k domain:AI)..." autocomplete="off" aria-label="Search codebases, symbols, and domains">
+                <button class="btn-search-clear" id="btn-clear-search" style="display: none;" aria-label="Clear search input">
                   <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
                 </button>
               </div>
 
               <!-- Trending Velocity Radar Bar -->
-              <div class="trending-radar-bar">
+              <div class="trending-radar-bar" role="toolbar" aria-label="Trending Velocity Radar Filters">
                 <span class="radar-title">⚡ RADAR:</span>
-                <button class="radar-pill active" data-filter="all">🌐 All (2,500+)</button>
-                <button class="radar-pill" data-filter="legends">🌟 100K+ Legends</button>
-                <button class="radar-pill" data-filter="ai">🤖 AI & LLM Core</button>
-                <button class="radar-pill" data-filter="rust">🦀 Pure Rust</button>
-                <button class="radar-pill" data-filter="go">🐹 Cloud Go</button>
-                <button class="radar-pill" data-filter="systems">⚡ Systems & OS</button>
-                <button class="radar-pill" data-filter="web">🚀 Modern Web</button>
+                <button class="radar-pill active" data-filter="all" aria-label="Show All Repositories">🌐 All (2,500+)</button>
+                <button class="radar-pill" data-filter="legends" aria-label="Filter 100K+ Legend Repositories">🌟 100K+ Legends</button>
+                <button class="radar-pill" data-filter="ai" aria-label="Filter AI and LLM Repositories">🤖 AI & LLM Core</button>
+                <button class="radar-pill" data-filter="rust" aria-label="Filter Rust Repositories">🦀 Pure Rust</button>
+                <button class="radar-pill" data-filter="go" aria-label="Filter Go Repositories">🐹 Cloud Go</button>
+                <button class="radar-pill" data-filter="systems" aria-label="Filter Systems Repositories">⚡ Systems & OS</button>
+                <button class="radar-pill" data-filter="web" aria-label="Filter Web Repositories">🚀 Modern Web</button>
               </div>
 
               <!-- Filter Operator Chips -->
-              <div class="filter-chips-row">
+              <div class="filter-chips-row" role="toolbar" aria-label="Filter syntax quick chips">
                 <span class="chip-caption">Filter syntax:</span>
                 <button class="query-chip" data-query="lang:rust">lang:rust</button>
                 <button class="query-chip" data-query="lang:go">lang:go</button>
@@ -349,19 +351,19 @@
                 
                 <div class="stream-toolbar-right">
                   <!-- View Mode Switcher: Grid vs Compact List -->
-                  <div class="layout-toggle-group">
-                    <button class="btn-layout-toggle active" data-mode="grid" id="btn-view-grid" title="Grid View">
+                  <div class="layout-toggle-group" role="group" aria-label="Layout view mode">
+                    <button class="btn-layout-toggle active" data-mode="grid" id="btn-view-grid" title="Grid View" aria-label="Switch to Grid View">
                       <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
                     </button>
-                    <button class="btn-layout-toggle" data-mode="list" id="btn-view-list" title="List View">
+                    <button class="btn-layout-toggle" data-mode="list" id="btn-view-list" title="List View" aria-label="Switch to List View">
                       <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg>
                     </button>
                   </div>
 
                   <!-- Sorter -->
                   <div class="stream-sort-controls">
-                    <span class="sort-label-text">Sort:</span>
-                    <select id="sort-by-select" class="omni-select-mini" aria-label="Sort repositories">
+                    <label for="sort-by-select" class="sort-label-text">Sort:</label>
+                    <select id="sort-by-select" class="omni-select-mini" aria-label="Sort repositories by criteria">
                       <option value="stars">Stars</option>
                       <option value="sloc">Lines of Code</option>
                       <option value="complexity">Complexity</option>
@@ -375,7 +377,7 @@
             </div>
 
             <!-- Repositories Grid Display -->
-            <div class="repo-cards-container" id="repo-cards-container" role="feed" aria-busy="false">
+            <div class="repo-cards-container" id="repo-cards-container" aria-live="polite">
               <div class="omni-wave-loader">
                 <div class="wave-bars-track">
                   <div class="wave-bar"></div>
@@ -519,18 +521,20 @@
         <div class="symbols-workspace">
           <div class="symbols-search-header">
             <div class="symbol-input-box">
+              <label for="symbol-search-input" class="sr-only">Search AST symbols</label>
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-              <input type="text" id="symbol-search-input" placeholder="Search functions, structs, classes across ALL indexed public codebases (e.g. new, Engine, Future, Start)..." autocomplete="off">
+              <input type="text" id="symbol-search-input" placeholder="Search functions, structs, classes across ALL indexed public codebases (e.g. new, Engine, Future, Start)..." autocomplete="off" aria-label="Search functions, structs, and classes across indexed codebases">
             </div>
             <div class="symbol-controls-right">
-              <select id="symbol-type-filter" class="omni-select-mini">
+              <label for="symbol-type-filter" class="sr-only">Filter by symbol type</label>
+              <select id="symbol-type-filter" class="omni-select-mini" aria-label="Filter AST symbols by type">
                 <option value="all">All Types</option>
                 <option value="function">Functions & Methods</option>
                 <option value="struct">Structs & Classes</option>
                 <option value="trait">Traits & Interfaces</option>
                 <option value="enum">Enums & Types</option>
               </select>
-              <button class="btn-primary-action" id="btn-exec-symbol-search">
+              <button class="btn-primary-action" id="btn-exec-symbol-search" aria-label="Execute symbol search">
                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
                 <span>Search Symbols</span>
               </button>
@@ -556,8 +560,8 @@
             </div>
             
             <div class="sort-group">
-              <span class="sort-label-text">Algorithm:</span>
-              <select id="comparator-algo-select" class="omni-select">
+              <label for="comparator-algo-select" class="sort-label-text">Algorithm:</label>
+              <select id="comparator-algo-select" class="omni-select" aria-label="Select algorithm to compare">
                 <!-- Populated dynamically -->
               </select>
             </div>
@@ -575,20 +579,23 @@
         <div class="graph-workspace">
           <div class="graph-top-nav">
             <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
-              <select id="cluster-mode-select" class="omni-select-mini" style="font-weight: 600;">
+              <label for="cluster-mode-select" class="sr-only">Cluster View Mode</label>
+              <select id="cluster-mode-select" class="omni-select-mini" style="font-weight: 600;" aria-label="Select galaxy universe cluster view mode">
                 <option value="universe">🌌 Galaxy Universe (All 2,300+ Repos)</option>
                 <option value="repository">🏛️ Target Repository Architecture</option>
               </select>
-              <select id="graph-repo-select" class="omni-select-mini">
+              <label for="graph-repo-select" class="sr-only">Select Target Repository</label>
+              <select id="graph-repo-select" class="omni-select-mini" aria-label="Select target repository for architecture graph">
                 <!-- Options -->
               </select>
-              <input type="text" id="cluster-search-input" placeholder="Highlight node..." class="omni-input" style="width: 140px; padding: 3px 8px; font-size: 11px;">
+              <label for="cluster-search-input" class="sr-only">Highlight node in cluster</label>
+              <input type="text" id="cluster-search-input" placeholder="Highlight node..." class="omni-input" style="width: 140px; padding: 3px 8px; font-size: 11px;" aria-label="Highlight node in cluster graph">
             </div>
 
             <div class="stream-toolbar-right">
               <span class="stream-match-count" id="graph-node-count">Nodes: 0</span>
               <span class="stream-match-count" id="graph-edge-count">Edges: 0</span>
-              <button class="btn-action-pill" id="btn-reset-graph-view">Reset View</button>
+              <button class="btn-action-pill" id="btn-reset-graph-view" aria-label="Reset cluster camera view">Reset View</button>
             </div>
           </div>
 
@@ -689,9 +696,11 @@
           <!-- Top Filter Toolbar -->
           <div class="rawfiles-toolbar">
             <div class="rawfiles-toolbar-left">
-              <input type="text" id="rawfiles-search-input" placeholder="Search across 100,000+ indexed files (*.rs, scheduler.go, CMakeLists.txt)..." class="omni-input" style="flex: 1; min-width: 220px;">
+              <label for="rawfiles-search-input" class="sr-only">Search across indexed files</label>
+              <input type="text" id="rawfiles-search-input" placeholder="Search across 100,000+ indexed files (*.rs, scheduler.go, CMakeLists.txt)..." class="omni-input" style="flex: 1; min-width: 220px;" aria-label="Search across indexed files">
               
-              <select id="rawfiles-lang-select" class="omni-select-mini" style="font-weight: 600;">
+              <label for="rawfiles-lang-select" class="sr-only">Filter by language</label>
+              <select id="rawfiles-lang-select" class="omni-select-mini" style="font-weight: 600;" aria-label="Filter raw files by language">
                 <option value="">All Languages</option>
                 <option value="Rust">Rust (🦀)</option>
                 <option value="Go">Go (🐹)</option>
@@ -705,7 +714,8 @@
                 <option value="Markdown">Markdown (📝)</option>
               </select>
 
-              <select id="rawfiles-repo-select" class="omni-select-mini" style="max-width: 220px;">
+              <label for="rawfiles-repo-select" class="sr-only">Filter by repository</label>
+              <select id="rawfiles-repo-select" class="omni-select-mini" style="max-width: 220px;" aria-label="Filter raw files by repository">
                 <option value="">All Repositories (2,500+)</option>
               </select>
             </div>
