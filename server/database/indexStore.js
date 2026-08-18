@@ -126,7 +126,28 @@ class IndexStore {
   }
 
   addRepository(repo, persist = true) {
-    if (!repo || !repo.id) return;
+    if (!repo) return;
+    const fullName = (repo.fullName || repo.name || '').trim();
+    if (!fullName) return;
+    const normalizedKey = fullName.toLowerCase().replace(/[^a-z0-9_]/g, '_');
+    const normalizedId = `repo_${normalizedKey}`;
+
+    // Check if an existing repo with same fullName (case-insensitive) or same name exists in storage
+    const all = this.storage.getAll();
+    const existing = all.find(r => {
+      const fn = (r.fullName || r.name || '').toLowerCase().trim();
+      return fn === fullName.toLowerCase() || (r.id && (r.id === repo.id || r.id === normalizedId));
+    });
+
+    if (existing) {
+      if (existing.id && existing.id !== normalizedId) {
+        this.storage.delete(existing.id);
+      }
+      repo.id = normalizedId;
+    } else {
+      repo.id = repo.id || normalizedId;
+    }
+
     this.storage.insertOrUpdate(repo);
     this.indexRecordInMemory(repo);
 
@@ -145,11 +166,24 @@ class IndexStore {
   }
 
   getAllRepositories() {
-    return this.storage.getAll();
+    const rawList = this.storage.getAll();
+    const seen = new Map();
+    for (const repo of rawList) {
+      const key = (repo.fullName || repo.name || repo.id || '').toLowerCase().trim();
+      if (!seen.has(key)) {
+        seen.set(key, repo);
+      } else {
+        const prev = seen.get(key);
+        if ((repo.stars || 0) > (prev.stars || 0) || ((repo.files?.length || 0) > (prev.files?.length || 0))) {
+          seen.set(key, repo);
+        }
+      }
+    }
+    return Array.from(seen.values());
   }
 
   count() {
-    return this.storage.count();
+    return this.getAllRepositories().length;
   }
 
   saveSnapshot() {
@@ -160,7 +194,7 @@ class IndexStore {
    * Search repositories with query parser, filters, sorting and pagination
    */
   search(queryStr = '', filters = {}, page = 1, limit = 50) {
-    let candidates = this.storage.getAll();
+    let candidates = this.getAllRepositories();
 
     // Parse operators from query string
     let searchTokens = [];

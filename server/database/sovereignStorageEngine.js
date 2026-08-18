@@ -120,6 +120,15 @@ class SovereignStorageEngine {
     return this.records.get(id) || null;
   }
 
+  delete(id) {
+    if (this.records.has(id)) {
+      this.records.delete(id);
+      this.totalIndexedCount = this.records.size;
+      return true;
+    }
+    return false;
+  }
+
   has(id) {
     return this.records.has(id);
   }
