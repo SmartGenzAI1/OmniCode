@@ -131,6 +131,21 @@ class IndexStore {
     if (!fullName) return;
     const normalizedKey = fullName.toLowerCase().replace(/[^a-z0-9_]/g, '_');
     const normalizedId = `repo_${normalizedKey}`;
+    const owner = repo.owner || (fullName.includes('/') ? fullName.split('/')[0] : (repo.name || 'repo'));
+
+    // Ensure baseline model defaults
+    repo.owner = owner;
+    repo.fullName = fullName;
+    repo.name = repo.name || (fullName.includes('/') ? fullName.split('/')[1] : fullName);
+    repo.ownerAvatar = repo.ownerAvatar || (repo.sourceForge === 'GitLab'
+      ? `https://gitlab.com/uploads/-/system/user/avatar/${encodeURIComponent(owner)}/avatar.png`
+      : `https://github.com/${encodeURIComponent(owner)}.png?size=72`);
+    repo.gitUrl = repo.gitUrl || `https://github.com/${fullName}.git`;
+    repo.healthScore = typeof repo.healthScore === 'number' ? repo.healthScore : 95;
+    repo.files = Array.isArray(repo.files) ? repo.files : [];
+    repo.fileCount = repo.fileCount || repo.files.length;
+    repo.totalSLOC = repo.totalSLOC || 0;
+    repo.averageComplexity = repo.averageComplexity || 3.5;
 
     // Check if an existing repo with same fullName (case-insensitive) or same name exists in storage
     const all = this.storage.getAll();
@@ -162,7 +177,32 @@ class IndexStore {
   }
 
   getRepositoryById(id) {
-    return this.storage.get(id);
+    if (!id) return null;
+    let repo = this.storage.get(id);
+    if (!repo) {
+      const lowerId = String(id).toLowerCase().trim();
+      const normalizedKey = `repo_${lowerId.replace(/[^a-z0-9_]/g, '_')}`;
+      const hyphenKey = `repo-${lowerId.replace(/[^a-z0-9_-]/g, '-')}`;
+
+      repo = this.storage.get(normalizedKey) || this.storage.get(hyphenKey);
+
+      if (!repo) {
+        const all = this.storage.getAll();
+        repo = all.find(r => {
+          if (!r) return false;
+          const rId = (r.id || '').toLowerCase();
+          const rFullName = (r.fullName || '').toLowerCase();
+          const rName = (r.name || '').toLowerCase();
+          return rId === lowerId ||
+                 rFullName === lowerId ||
+                 rName === lowerId ||
+                 rFullName.endsWith('/' + lowerId) ||
+                 rId === normalizedKey ||
+                 rId === hyphenKey;
+        });
+      }
+    }
+    return repo || null;
   }
 
   getAllRepositories() {
@@ -294,18 +334,51 @@ class IndexStore {
     };
   }
 
-  searchSymbols(symbolQuery = '') {
-    if (!symbolQuery) return [];
-    const q = symbolQuery.toLowerCase();
-    const results = [];
+  searchSymbols(symbolQuery = '', type = 'all', page = 1, limit = 50) {
+    const q = (symbolQuery || '').toLowerCase().trim();
+    const typeFilter = (type || 'all').toLowerCase().trim();
+    const pageNum = Math.max(1, parseInt(page, 10) || 1);
+    const limitNum = Math.min(200, Math.max(1, parseInt(limit, 10) || 50));
+    
+    let matches = [];
 
-    for (const [sym, matches] of this.symbolIndex.entries()) {
-      if (sym.includes(q)) {
-        results.push(...matches);
-        if (results.length >= 50) break;
+    if (q) {
+      for (const [sym, symMatches] of this.symbolIndex.entries()) {
+        if (sym.includes(q)) {
+          for (const m of symMatches) {
+            if (typeFilter !== 'all' && (m.type || '').toLowerCase() !== typeFilter) {
+              continue;
+            }
+            matches.push(m);
+          }
+        }
+      }
+    } else {
+      for (const symMatches of this.symbolIndex.values()) {
+        for (const m of symMatches) {
+          if (typeFilter !== 'all' && (m.type || '').toLowerCase() !== typeFilter) {
+            continue;
+          }
+          matches.push(m);
+          if (matches.length >= 1000) break;
+        }
+        if (matches.length >= 1000) break;
       }
     }
-    return results;
+
+    const total = matches.length;
+    const startIndex = (pageNum - 1) * limitNum;
+    const paginated = matches.slice(startIndex, startIndex + limitNum);
+
+    return {
+      query: symbolQuery,
+      type: typeFilter,
+      total,
+      page: pageNum,
+      limit: limitNum,
+      totalPages: Math.ceil(total / limitNum) || 1,
+      results: paginated
+    };
   }
 
   getAggregationStats() {

@@ -147,6 +147,15 @@ app.use(express.static(path.join(__dirname, '../public'), {
   lastModified: true
 }));
 
+// API Error Handler
+app.use('/api', (err, req, res, next) => {
+  console.error('[API Error]', err.message);
+  res.status(err.status || 500).json({
+    error: err.message || 'Internal Sovereign Engine Error',
+    path: req.originalUrl
+  });
+});
+
 // 7. SPA Fallback
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, '../public/index.html'));

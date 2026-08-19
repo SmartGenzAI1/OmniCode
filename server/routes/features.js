@@ -80,50 +80,61 @@ module.exports = function createFeaturesRouter(indexStore) {
     }
   });
 
-  // 1.5 Unique Visitor Tracker (Total / Today: 12 AM to 12 AM UTC/Local)
-  const inMemoryVisitors = new Set();
+  // 1.5 Unique Visitor Tracker (Total / Today: 12 AM to 12 AM UTC)
+  const inMemoryAllVisitors = new Set();
+  const inMemoryDailyVisitors = new Map(); // dateStr (YYYY-MM-DD UTC) -> Set of hashes
   const baseVisitorOffset = 1840; // baseline developer visits
+
+  function getClientVisitorHash(req) {
+    const headerIp = req.headers['cf-connecting-ip'] || 
+                     req.headers['x-real-ip'] || 
+                     req.headers['x-forwarded-for'] || 
+                     req.socket?.remoteAddress || 
+                     req.ip || 
+                     '';
+    const firstIp = headerIp.split(',')[0].trim();
+    const userAgent = req.headers['user-agent'] || '';
+    const clientProvided = req.body?.fingerprint || req.query?.fingerprint || '';
+    const raw = `${clientProvided}_${firstIp}_${userAgent}`;
+    return require('crypto').createHash('sha256').update(raw).digest('hex').slice(0, 32);
+  }
+
+  function getUtcDateString() {
+    return new Date().toISOString().slice(0, 10); // YYYY-MM-DD in UTC (12 AM to 12 AM UTC)
+  }
 
   router.post('/visitors/ping', async (req, res) => {
     try {
-      const clientFingerprint = req.body?.fingerprint || req.headers['x-forwarded-for'] || req.socket.remoteAddress || 'anonymous_dev';
-      const todayStr = new Date().toISOString().slice(0, 10);
-      const hash = `${clientFingerprint}`.replace(/[^a-zA-Z0-9_-]/g, '').slice(0, 64) || 'dev_visitor';
+      const todayStr = getUtcDateString();
+      const hash = getClientVisitorHash(req);
 
-      inMemoryVisitors.add(`${todayStr}:${hash}`);
-      inMemoryVisitors.add(`all:${hash}`);
+      // Memory tracking
+      inMemoryAllVisitors.add(hash);
+      if (!inMemoryDailyVisitors.has(todayStr)) {
+        // Prune older than 30 days
+        if (inMemoryDailyVisitors.size > 30) {
+          const keys = Array.from(inMemoryDailyVisitors.keys()).sort();
+          while (keys.length > 30) {
+            inMemoryDailyVisitors.delete(keys.shift());
+          }
+        }
+        inMemoryDailyVisitors.set(todayStr, new Set());
+      }
+      inMemoryDailyVisitors.get(todayStr).add(hash);
 
-      let totalUnique = baseVisitorOffset + Array.from(inMemoryVisitors).filter(k => k.startsWith('all:')).length;
-      let todayUnique = Array.from(inMemoryVisitors).filter(k => k.startsWith(`${todayStr}:`)).length;
+      let totalUnique = baseVisitorOffset + inMemoryAllVisitors.size;
+      let todayUnique = inMemoryDailyVisitors.get(todayStr).size;
 
-      if (universalDb.isConnected && universalDb.pool) {
+      // Database persistence (Neon PostgreSQL)
+      if (universalDb.isConnected && typeof universalDb.recordVisitor === 'function') {
         try {
-          const client = await universalDb.pool.connect();
-          try {
-            await client.query(`
-              CREATE TABLE IF NOT EXISTS omnicode_visitors (
-                visitor_hash VARCHAR(100) NOT NULL,
-                visit_date DATE NOT NULL DEFAULT CURRENT_DATE,
-                visited_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                PRIMARY KEY (visitor_hash, visit_date)
-              );
-            `);
-            await client.query(`
-              INSERT INTO omnicode_visitors (visitor_hash, visit_date)
-              VALUES ($1, CURRENT_DATE)
-              ON CONFLICT (visitor_hash, visit_date) DO NOTHING;
-            `, [hash]);
-
-            const totalRes = await client.query('SELECT COUNT(DISTINCT visitor_hash) AS cnt FROM omnicode_visitors');
-            const todayRes = await client.query('SELECT COUNT(DISTINCT visitor_hash) AS cnt FROM omnicode_visitors WHERE visit_date = CURRENT_DATE');
-
-            totalUnique = baseVisitorOffset + parseInt(totalRes.rows[0]?.cnt || 0, 10);
-            todayUnique = parseInt(todayRes.rows[0]?.cnt || 1, 10);
-          } finally {
-            client.release();
+          const dbStats = await universalDb.recordVisitor(hash, todayStr);
+          if (dbStats) {
+            totalUnique = baseVisitorOffset + dbStats.total;
+            todayUnique = dbStats.today;
           }
         } catch (dbErr) {
-          // Fallback to memory
+          // fallback to memory
         }
       }
 
@@ -134,30 +145,27 @@ module.exports = function createFeaturesRouter(indexStore) {
         date: todayStr
       });
     } catch (err) {
+      const todayStr = getUtcDateString();
       res.json({
         success: true,
         total: baseVisitorOffset + 42,
         today: 18,
-        date: new Date().toISOString().slice(0, 10)
+        date: todayStr
       });
     }
   });
 
   router.get('/visitors/stats', async (req, res) => {
-    const todayStr = new Date().toISOString().slice(0, 10);
-    let totalUnique = baseVisitorOffset + Array.from(inMemoryVisitors).filter(k => k.startsWith('all:')).length;
-    let todayUnique = Array.from(inMemoryVisitors).filter(k => k.startsWith(`${todayStr}:`)).length;
+    const todayStr = getUtcDateString();
+    let totalUnique = baseVisitorOffset + inMemoryAllVisitors.size;
+    let todayUnique = inMemoryDailyVisitors.get(todayStr) ? inMemoryDailyVisitors.get(todayStr).size : 0;
 
-    if (universalDb.isConnected && universalDb.pool) {
+    if (universalDb.isConnected && typeof universalDb.getVisitorStats === 'function') {
       try {
-        const client = await universalDb.pool.connect();
-        try {
-          const totalRes = await client.query('SELECT COUNT(DISTINCT visitor_hash) AS cnt FROM omnicode_visitors');
-          const todayRes = await client.query('SELECT COUNT(DISTINCT visitor_hash) AS cnt FROM omnicode_visitors WHERE visit_date = CURRENT_DATE');
-          totalUnique = baseVisitorOffset + parseInt(totalRes.rows[0]?.cnt || 0, 10);
-          todayUnique = parseInt(todayRes.rows[0]?.cnt || 1, 10);
-        } finally {
-          client.release();
+        const dbStats = await universalDb.getVisitorStats(todayStr);
+        if (dbStats) {
+          totalUnique = baseVisitorOffset + dbStats.total;
+          todayUnique = dbStats.today;
         }
       } catch (_) {}
     }
@@ -226,50 +234,59 @@ module.exports = function createFeaturesRouter(indexStore) {
     }
   });
 
-  // 3. Cross-Repository AST Symbol Search
+  // 3. Cross-Repository AST Symbol Search with Pagination
   router.get('/symbols', (req, res) => {
-    const query = (req.query.q || '').trim().toLowerCase();
-    const typeFilter = req.query.type || 'all';
+    const query = (req.query.q || '').trim();
+    const typeFilter = (req.query.type || 'all').trim();
+    const languageFilter = (req.query.language || req.query.lang || '').trim().toLowerCase();
+    const pageNum = Math.max(1, parseInt(req.query.page, 10) || 1);
+    const limitNum = Math.min(200, Math.max(1, parseInt(req.query.limit, 10) || 50));
 
-    if (!query) {
-      return res.json({ total: 0, results: [] });
-    }
-
+    const allRepos = indexStore.getAllRepositories() || [];
     const matches = [];
-    const allRepos = indexStore.getAllRepositories();
+    const queryLower = query.toLowerCase();
 
     for (const repo of allRepos) {
-      if (!repo.files) continue;
+      if (!Array.isArray(repo.files)) continue;
       for (const file of repo.files) {
-        if (!file.symbols) continue;
+        if (languageFilter && (file.language || '').toLowerCase() !== languageFilter) {
+          continue;
+        }
+        if (!Array.isArray(file.symbols)) continue;
         for (const sym of file.symbols) {
-          if (typeFilter !== 'all' && sym.type.toLowerCase() !== typeFilter.toLowerCase()) {
+          if (typeFilter !== 'all' && (sym.type || '').toLowerCase() !== typeFilter.toLowerCase()) {
             continue;
           }
-          if (sym.name.toLowerCase().includes(query)) {
+          if (!queryLower || (sym.name && sym.name.toLowerCase().includes(queryLower)) || (sym.signature && sym.signature.toLowerCase().includes(queryLower))) {
             matches.push({
               repoId: repo.id,
               repoName: repo.name,
-              fullName: repo.fullName,
-              language: file.language,
+              fullName: repo.fullName || repo.name,
+              language: file.language || repo.primaryLanguage || 'Other',
               filePath: file.path,
               symbolName: sym.name,
               symbolType: sym.type,
-              line: sym.line,
-              stars: repo.stars
+              signature: sym.signature || null,
+              line: sym.line || 1,
+              stars: repo.stars || 0
             });
-            if (matches.length >= 100) break;
           }
         }
-        if (matches.length >= 100) break;
       }
-      if (matches.length >= 100) break;
     }
+
+    const total = matches.length;
+    const startIndex = (pageNum - 1) * limitNum;
+    const paginated = matches.slice(startIndex, startIndex + limitNum);
 
     res.json({
       query,
-      total: matches.length,
-      results: matches
+      type: typeFilter,
+      total,
+      page: pageNum,
+      limit: limitNum,
+      totalPages: Math.ceil(total / limitNum) || 1,
+      results: paginated
     });
   });
 
@@ -391,22 +408,28 @@ module.exports = function createFeaturesRouter(indexStore) {
     res.send(md);
   });
 
-  // 8. Global Raw Files & Tree Catalog Across All Repositories
+  // 8. Global Raw Files & Tree Catalog Across All Repositories with High-Speed Pagination
   router.get('/raw-files', (req, res) => {
     const { q = '', language = '', repo = '', page = 1, limit = 40 } = req.query;
     const pageNum = Math.max(1, parseInt(page, 10) || 1);
-    const limitNum = Math.min(100, Math.max(10, parseInt(limit, 10) || 40));
+    const limitNum = Math.min(100, Math.max(5, parseInt(limit, 10) || 40));
     const query = (q || '').toLowerCase().trim();
     const langFilter = (language || '').toLowerCase().trim();
     const repoFilter = (repo || '').toLowerCase().trim();
 
     const allRepos = indexStore.getAllRepositories() || [];
-    let allFiles = [];
+    const matchedPointers = [];
 
     for (const r of allRepos) {
-      if (repoFilter && !((r.fullName || '').toLowerCase().includes(repoFilter) || (r.name || '').toLowerCase().includes(repoFilter) || (r.id || '').toLowerCase().includes(repoFilter))) {
-        continue;
+      if (repoFilter) {
+        const rName = (r.name || '').toLowerCase();
+        const rFull = (r.fullName || '').toLowerCase();
+        const rId = (r.id || '').toLowerCase();
+        if (!rFull.includes(repoFilter) && !rName.includes(repoFilter) && !rId.includes(repoFilter)) {
+          continue;
+        }
       }
+
       if (Array.isArray(r.files)) {
         for (const file of r.files) {
           if (langFilter && (file.language || '').toLowerCase() !== langFilter) {
@@ -420,48 +443,52 @@ module.exports = function createFeaturesRouter(indexStore) {
               continue;
             }
           }
-          const fullName = r.fullName || r.name || 'unknown';
-          const owner = fullName.includes('/') ? fullName.split('/')[0] : (r.owner || 'github');
-          const repoOnly = fullName.includes('/') ? fullName.split('/')[1] : (r.name || 'project');
-          const avatarUrl = `https://github.com/${owner}.png?size=64`;
-          const projectUrl = r.gitUrl || `https://github.com/${fullName}`;
-
-          allFiles.push({
-            name: file.name || file.path.split('/').pop(),
-            path: file.path,
-            language: file.language || 'Plain Text',
-            size: file.size || (file.content ? file.content.length : 0),
-            totalLines: file.totalLines || (file.content ? file.content.split('\n').length : 0),
-            codeLines: file.codeLines || 0,
-            commentLines: file.commentLines || 0,
-            complexity: file.complexity || 1,
-            symbolsCount: Array.isArray(file.symbols) ? file.symbols.length : 0,
-            repoId: r.id,
-            repoName: repoOnly,
-            repoFullName: fullName,
-            owner: owner,
-            ownerAvatar: avatarUrl,
-            projectUrl: projectUrl,
-            repoStars: r.stars || 0,
-            repoLanguage: r.primaryLanguage || 'Other',
-            repoDomain: r.domain || 'Systems',
-            repoLicense: r.license || 'MIT',
-            content: file.content || ''
-          });
+          matchedPointers.push({ r, file });
         }
       }
     }
 
-    const total = allFiles.length;
+    const total = matchedPointers.length;
     const startIndex = (pageNum - 1) * limitNum;
-    const paginated = allFiles.slice(startIndex, startIndex + limitNum);
+    const paginatedSlice = matchedPointers.slice(startIndex, startIndex + limitNum);
+
+    const formattedFiles = paginatedSlice.map(({ r, file }) => {
+      const fullName = r.fullName || r.name || 'unknown';
+      const owner = r.owner || (fullName.includes('/') ? fullName.split('/')[0] : 'github');
+      const repoOnly = fullName.includes('/') ? fullName.split('/')[1] : (r.name || 'project');
+      const avatarUrl = r.ownerAvatar || `https://github.com/${encodeURIComponent(owner)}.png?size=64`;
+      const projectUrl = r.gitUrl || `https://github.com/${fullName}`;
+
+      return {
+        name: file.name || file.path.split('/').pop(),
+        path: file.path,
+        language: file.language || 'Plain Text',
+        size: file.size || (file.content ? Buffer.byteLength(file.content, 'utf8') : 0),
+        totalLines: file.totalLines || (file.content ? file.content.split('\n').length : 0),
+        codeLines: file.codeLines || 0,
+        commentLines: file.commentLines || 0,
+        complexity: file.complexity || 1,
+        symbolsCount: Array.isArray(file.symbols) ? file.symbols.length : 0,
+        repoId: r.id,
+        repoName: repoOnly,
+        repoFullName: fullName,
+        owner: owner,
+        ownerAvatar: avatarUrl,
+        projectUrl: projectUrl,
+        repoStars: r.stars || 0,
+        repoLanguage: r.primaryLanguage || 'Other',
+        repoDomain: r.domain || 'Systems',
+        repoLicense: r.license || 'MIT',
+        content: file.content || ''
+      };
+    });
 
     res.json({
       total,
       page: pageNum,
       limit: limitNum,
       totalPages: Math.ceil(total / limitNum) || 1,
-      files: paginated
+      files: formattedFiles
     });
   });
 

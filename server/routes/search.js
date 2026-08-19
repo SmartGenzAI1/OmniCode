@@ -11,21 +11,37 @@ module.exports = function createSearchRouter(indexStore, ensureDbRestored) {
   // Search AST Symbols
   router.get('/symbols', async (req, res) => {
     if (typeof ensureDbRestored === 'function') {
-      await ensureDbRestored().catch(() => {});
+      await Promise.race([
+        ensureDbRestored(),
+        new Promise(resolve => setTimeout(resolve, 150))
+      ]).catch(() => {});
     }
     const query = req.query.q || '';
-    const results = indexStore.searchSymbols(query);
+    const type = req.query.type || 'all';
+    const page = req.query.page || 1;
+    const limit = req.query.limit || 50;
+
+    const result = indexStore.searchSymbols(query, type, page, limit);
     res.json({
-      query,
-      count: results.length,
-      symbols: results
+      query: result.query,
+      type: result.type,
+      count: result.results.length,
+      total: result.total,
+      page: result.page,
+      limit: result.limit,
+      totalPages: result.totalPages,
+      symbols: result.results,
+      results: result.results
     });
   });
 
   // Global Index Statistics & Aggregations
   router.get('/stats', async (req, res) => {
     if (typeof ensureDbRestored === 'function') {
-      await ensureDbRestored().catch(() => {});
+      await Promise.race([
+        ensureDbRestored(),
+        new Promise(resolve => setTimeout(resolve, 150))
+      ]).catch(() => {});
     }
     const stats = indexStore.getAggregationStats();
     const supportedLanguages = getAllSupportedLanguages();

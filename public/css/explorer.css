@@ -447,13 +447,16 @@
   display: flex;
   align-items: center;
   gap: 3px;
-  padding: 1px 6px;
+  padding: 2px 7px;
   border-radius: var(--radius-xs);
-  font-size: 10.5px;
+  font-size: 11px;
   font-family: var(--font-mono);
-  font-weight: 600;
+  font-weight: 700;
   background-color: var(--accent-emerald-subtle);
   color: var(--accent-emerald);
+  border: 1px solid hsla(155, 65%, 45%, 0.25);
+  flex-shrink: 0;
+  white-space: nowrap;
 }
 
 .repo-desc-text {

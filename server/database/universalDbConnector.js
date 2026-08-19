@@ -82,6 +82,15 @@ class UniversalDbConnector {
           CREATE INDEX IF NOT EXISTS idx_omni_lang ON omnicode_repositories (primary_language);
           CREATE INDEX IF NOT EXISTS idx_omni_stars ON omnicode_repositories (stars DESC);
 
+          -- Visitors tracking table with UTC date precision
+          CREATE TABLE IF NOT EXISTS omnicode_visitors (
+            visitor_hash VARCHAR(100) NOT NULL,
+            visit_date DATE NOT NULL DEFAULT (CURRENT_TIMESTAMP AT TIME ZONE 'UTC')::DATE,
+            visited_at TIMESTAMP WITH TIME ZONE DEFAULT (CURRENT_TIMESTAMP AT TIME ZONE 'UTC'),
+            PRIMARY KEY (visitor_hash, visit_date)
+          );
+          CREATE INDEX IF NOT EXISTS idx_omni_visitors_date ON omnicode_visitors (visit_date);
+
           -- Auto-Deduplicate: Delete older duplicate rows by full_name, keeping newest
           DELETE FROM omnicode_repositories a USING omnicode_repositories b
           WHERE a.ctid < b.ctid AND LOWER(a.full_name) = LOWER(b.full_name);
@@ -265,6 +274,54 @@ class UniversalDbConnector {
       }
     } catch (e) {
       return 0;
+    }
+  }
+
+  async recordVisitor(visitorHash, visitDateStr) {
+    if (!this.isConnected || !this.pool || !visitorHash) return null;
+    try {
+      const client = await this.pool.connect();
+      try {
+        await client.query(`
+          INSERT INTO omnicode_visitors (visitor_hash, visit_date, visited_at)
+          VALUES ($1, $2::DATE, CURRENT_TIMESTAMP AT TIME ZONE 'UTC')
+          ON CONFLICT (visitor_hash, visit_date) DO NOTHING
+        `, [visitorHash, visitDateStr]);
+
+        const totalRes = await client.query('SELECT COUNT(DISTINCT visitor_hash) AS cnt FROM omnicode_visitors');
+        const todayRes = await client.query('SELECT COUNT(DISTINCT visitor_hash) AS cnt FROM omnicode_visitors WHERE visit_date = $1::DATE', [visitDateStr]);
+
+        return {
+          total: parseInt(totalRes.rows[0]?.cnt || 0, 10),
+          today: parseInt(todayRes.rows[0]?.cnt || 0, 10)
+        };
+      } finally {
+        client.release();
+      }
+    } catch (err) {
+      console.warn('[CloudDB] recordVisitor note:', err.message);
+      return null;
+    }
+  }
+
+  async getVisitorStats(visitDateStr) {
+    if (!this.isConnected || !this.pool) return null;
+    try {
+      const client = await this.pool.connect();
+      try {
+        const totalRes = await client.query('SELECT COUNT(DISTINCT visitor_hash) AS cnt FROM omnicode_visitors');
+        const todayRes = await client.query('SELECT COUNT(DISTINCT visitor_hash) AS cnt FROM omnicode_visitors WHERE visit_date = $1::DATE', [visitDateStr]);
+
+        return {
+          total: parseInt(totalRes.rows[0]?.cnt || 0, 10),
+          today: parseInt(todayRes.rows[0]?.cnt || 0, 10)
+        };
+      } finally {
+        client.release();
+      }
+    } catch (err) {
+      console.warn('[CloudDB] getVisitorStats note:', err.message);
+      return null;
     }
   }
 

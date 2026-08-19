@@ -74,8 +74,8 @@ module.exports = function createSeoRouter(indexStore) {
 
       xml += `</urlset>`;
 
-      res.setHeader('Content-Type', 'application/xml');
-      res.setHeader('Cache-Control', 'public, max-age=3600');
+      res.setHeader('Content-Type', 'application/xml; charset=utf-8');
+      res.setHeader('Cache-Control', 'public, max-age=3600, s-maxage=3600');
       res.send(xml);
     } catch (err) {
       res.status(500).send('Error generating sitemap');
@@ -100,8 +100,8 @@ Disallow: /api/crawler
 
 Sitemap: ${baseUrl}/sitemap.xml
 `;
-    res.setHeader('Content-Type', 'text/plain');
-    res.setHeader('Cache-Control', 'public, max-age=86400');
+    res.setHeader('Content-Type', 'text/plain; charset=utf-8');
+    res.setHeader('Cache-Control', 'public, max-age=86400, s-maxage=86400');
     res.send(robotsTxt);
   });
 
@@ -123,14 +123,14 @@ Sitemap: ${baseUrl}/sitemap.xml
         }
       ]
     };
-    res.setHeader('Content-Type', 'application/json');
-    res.setHeader('Cache-Control', 'public, max-age=86400');
+    res.setHeader('Content-Type', 'application/json; charset=utf-8');
+    res.setHeader('Cache-Control', 'public, max-age=86400, s-maxage=86400');
     res.json(manifest);
   });
 
   // Google Site Verification File Fallback
   router.get(['/googlezfi0SQfCZoenZcVVjw3EWg-VlwQUjHi9NTNCDddscUE.html', '/google-site-verification.html'], (req, res) => {
-    res.setHeader('Content-Type', 'text/html');
+    res.setHeader('Content-Type', 'text/html; charset=utf-8');
     res.send('google-site-verification: googlezfi0SQfCZoenZcVVjw3EWg-VlwQUjHi9NTNCDddscUE.html');
   });
 
@@ -161,7 +161,7 @@ Sitemap: ${baseUrl}/sitemap.xml
 - [Search Statistics API](${baseUrl}/api/search/stats): Real-time language and domain aggregation metrics.
 `;
     res.setHeader('Content-Type', 'text/markdown; charset=utf-8');
-    res.setHeader('Cache-Control', 'public, max-age=86400');
+    res.setHeader('Cache-Control', 'public, max-age=86400, s-maxage=86400');
     res.send(text);
   });
 

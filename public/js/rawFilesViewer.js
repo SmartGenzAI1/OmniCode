@@ -81,19 +81,23 @@ class OmniRawFilesViewer {
     }
 
     if (this.dom.btnOpenInStudio) {
-      this.dom.btnOpenInStudio.addEventListener('click', () => {
+      this.dom.btnOpenInStudio.addEventListener('click', async () => {
         if (this.activeFile && window.app) {
           this.dom.previewModal.style.display = 'none';
-          window.app.switchTab('viewer');
+          await window.app.openRepoInStudio(this.activeFile.repoId);
           if (window.app.repoViewer) {
-            window.app.repoViewer.loadRepository(this.activeFile.repoId);
-            setTimeout(() => {
-              window.app.repoViewer.selectFile(this.activeFile.path);
-            }, 250);
+            window.app.repoViewer.selectFile(this.activeFile.path);
           }
         }
       });
     }
+
+    // Close preview on Escape key
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && this.dom.previewModal && this.dom.previewModal.style.display === 'flex') {
+        this.dom.previewModal.style.display = 'none';
+      }
+    });
   }
 
   populateRepoOptions(repositories) {
@@ -256,15 +260,12 @@ class OmniRawFilesViewer {
         this.openPreviewModal(f);
       });
 
-      card.querySelector('.btn-studio').addEventListener('click', (e) => {
+      card.querySelector('.btn-studio').addEventListener('click', async (e) => {
         e.stopPropagation();
         if (window.app) {
-          window.app.switchTab('viewer');
+          await window.app.openRepoInStudio(f.repoId);
           if (window.app.repoViewer) {
-            window.app.repoViewer.loadRepository(f.repoId);
-            setTimeout(() => {
-              window.app.repoViewer.selectFile(f.path);
-            }, 250);
+            window.app.repoViewer.selectFile(f.path);
           }
         }
       });
@@ -358,7 +359,19 @@ class OmniRawFilesViewer {
 
     if (this.dom.previewCode) {
       const code = file.content || '// Empty or binary source';
-      this.dom.previewCode.textContent = code;
+      const isMd = (file.name && (file.name.toLowerCase().endsWith('.md') || file.name.toLowerCase().endsWith('.markdown'))) ||
+                   (file.language && file.language.toLowerCase() === 'markdown');
+
+      if (isMd && window.OmniRepoViewer && typeof window.OmniRepoViewer.parseSimpleMarkdown === 'function') {
+        this.dom.previewCode.className = 'raw-code-pre markdown-preview-surface';
+        this.dom.previewCode.innerHTML = window.OmniRepoViewer.parseSimpleMarkdown(code);
+      } else if (window.OmniRepoViewer && typeof window.OmniRepoViewer.highlightSyntax === 'function') {
+        this.dom.previewCode.className = 'raw-code-pre';
+        this.dom.previewCode.innerHTML = `<code>${window.OmniRepoViewer.highlightSyntax(code, file.language)}</code>`;
+      } else {
+        this.dom.previewCode.className = 'raw-code-pre';
+        this.dom.previewCode.textContent = code;
+      }
     }
 
     this.dom.previewModal.style.display = 'flex';

@@ -358,6 +358,11 @@ class OmniApp {
 
     this.dom.btnModalClose.addEventListener('click', closeModal);
     this.dom.btnModalCancel.addEventListener('click', closeModal);
+    this.dom.modalOverlay.addEventListener('click', (e) => {
+      if (e.target === this.dom.modalOverlay) {
+        closeModal();
+      }
+    });
 
     this.dom.btnModalSubmit.addEventListener('click', () => {
       const val = this.dom.modalInputUrl.value.trim();
@@ -398,6 +403,8 @@ class OmniApp {
         if (this.dom.securityModalOverlay) this.dom.securityModalOverlay.style.display = 'none';
         if (this.dom.mobileDrawerOverlay) this.dom.mobileDrawerOverlay.style.display = 'none';
         if (this.dom.shortcutsModalOverlay) this.dom.shortcutsModalOverlay.style.display = 'none';
+        const rawPreview = document.getElementById('raw-preview-modal-overlay');
+        if (rawPreview) rawPreview.style.display = 'none';
       }
     });
   }
@@ -429,6 +436,11 @@ class OmniApp {
 
   bindCommandPalette() {
     this.dom.btnOpenPalette.addEventListener('click', () => this.openCommandPalette());
+    this.dom.paletteModalOverlay.addEventListener('click', (e) => {
+      if (e.target === this.dom.paletteModalOverlay) {
+        this.closeCommandPalette();
+      }
+    });
     this.dom.paletteSearchInput.addEventListener('input', () => {
       this.renderPaletteResults(this.dom.paletteSearchInput.value.trim());
     });
@@ -628,6 +640,14 @@ class OmniApp {
       });
     }
 
+    if (this.dom.securityModalOverlay) {
+      this.dom.securityModalOverlay.addEventListener('click', (e) => {
+        if (e.target === this.dom.securityModalOverlay) {
+          this.dom.securityModalOverlay.style.display = 'none';
+        }
+      });
+    }
+
     if (this.dom.btnExportBundle) {
       this.dom.btnExportBundle.addEventListener('click', () => {
         const repo = this.repoViewer.currentRepo;
@@ -641,7 +661,11 @@ class OmniApp {
   switchTab(tabName) {
     this.activeTab = tabName;
     
-    this.dom.navTabs.forEach(t => t.classList.toggle('active', t.dataset.tab === tabName));
+    this.dom.navTabs.forEach(t => {
+      const isActive = t.dataset.tab === tabName;
+      t.classList.toggle('active', isActive);
+      t.setAttribute('aria-selected', isActive ? 'true' : 'false');
+    });
     this.dom.tabPanes.forEach(p => p.classList.toggle('active', p.id === `pane-${tabName}`));
 
     if (this.dom.mobileNavItems) {
