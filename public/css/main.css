@@ -1368,6 +1368,33 @@ input:focus-visible, select:focus-visible {
   font-weight: 700;
 }
 
+.radar-icon {
+  vertical-align: -1px;
+  margin-right: 3px;
+}
+
+.lang-icon-badge {
+  font-size: 8.5px;
+  font-weight: 800;
+  font-family: var(--font-mono);
+  padding: 1px 4px;
+  border-radius: 3px;
+  letter-spacing: 0.5px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 3px;
+  vertical-align: middle;
+}
+
+.rust-badge { background: hsla(25, 95%, 50%, 0.2); color: hsl(25, 95%, 60%); border: 1px solid hsla(25, 95%, 50%, 0.4); }
+.go-badge { background: hsla(185, 85%, 45%, 0.2); color: hsl(185, 85%, 60%); border: 1px solid hsla(185, 85%, 45%, 0.4); }
+.ts-badge { background: hsla(210, 90%, 55%, 0.2); color: hsl(210, 90%, 70%); border: 1px solid hsla(210, 90%, 55%, 0.4); }
+.py-badge { background: hsla(205, 80%, 50%, 0.2); color: hsl(205, 85%, 65%); border: 1px solid hsla(205, 80%, 50%, 0.4); }
+.js-badge { background: hsla(48, 95%, 50%, 0.2); color: hsl(48, 95%, 60%); border: 1px solid hsla(48, 95%, 50%, 0.4); }
+.zig-badge { background: hsla(38, 95%, 50%, 0.2); color: hsl(38, 95%, 60%); border: 1px solid hsla(38, 95%, 50%, 0.4); }
+.cpp-badge { background: hsla(220, 80%, 60%, 0.2); color: hsl(220, 80%, 75%); border: 1px solid hsla(220, 80%, 60%, 0.4); }
+
 /* ================= 10. CODE STUDIO ARCHITECTURE INSPECTOR ================= */
 .studio-nav-segmented {
   display: flex;

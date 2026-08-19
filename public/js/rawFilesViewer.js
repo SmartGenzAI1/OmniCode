@@ -147,13 +147,13 @@ class OmniRawFilesViewer {
     const name = (filename || '').toLowerCase();
 
     if (lang === 'rust' || name.endsWith('.rs') || name === 'cargo.toml') {
-      return `<span class="file-brand-icon icon-rust">🦀</span>`;
+      return `<span class="file-brand-icon icon-rust">RS</span>`;
     }
     if (lang === 'python' || name.endsWith('.py') || name === 'pyproject.toml' || name === 'requirements.txt') {
-      return `<span class="file-brand-icon icon-python">🐍</span>`;
+      return `<span class="file-brand-icon icon-python">PY</span>`;
     }
     if (lang === 'go' || name.endsWith('.go') || name === 'go.mod') {
-      return `<span class="file-brand-icon icon-go">🐹</span>`;
+      return `<span class="file-brand-icon icon-go">GO</span>`;
     }
     if (lang === 'typescript' || name.endsWith('.ts') || name.endsWith('.tsx')) {
       return `<span class="file-brand-icon icon-ts">TS</span>`;
@@ -168,18 +168,18 @@ class OmniRawFilesViewer {
       return `<span class="file-brand-icon icon-c">C</span>`;
     }
     if (lang === 'zig' || name.endsWith('.zig')) {
-      return `<span class="file-brand-icon icon-zig">⚡</span>`;
+      return `<span class="file-brand-icon icon-zig">ZIG</span>`;
     }
     if (lang === 'solidity' || name.endsWith('.sol')) {
-      return `<span class="file-brand-icon icon-sol">💎</span>`;
+      return `<span class="file-brand-icon icon-sol">SOL</span>`;
     }
     if (name.endsWith('.md') || name === 'readme.md') {
-      return `<span class="file-brand-icon icon-md">📝</span>`;
+      return `<span class="file-brand-icon icon-md">MD</span>`;
     }
     if (name.endsWith('.json') || name.endsWith('.toml') || name.endsWith('.yaml') || name.endsWith('.yml')) {
-      return `<span class="file-brand-icon icon-config">⚙️</span>`;
+      return `<span class="file-brand-icon icon-config">{ }</span>`;
     }
-    return `<span class="file-brand-icon icon-generic">📄</span>`;
+    return `<span class="file-brand-icon icon-generic">DOC</span>`;
   }
 
   renderFiles(data) {
@@ -192,7 +192,9 @@ class OmniRawFilesViewer {
     if (!data.files || data.files.length === 0) {
       this.dom.filesContainer.innerHTML = `
         <div style="grid-column: 1 / -1; padding: 50px; text-align: center; color: var(--text-muted);">
-          <div style="font-size: 28px; margin-bottom: 10px;">📂</div>
+          <div style="margin-bottom: 10px;">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="color: var(--text-faint);"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path><polyline points="13 2 13 9 20 9"></polyline></svg>
+          </div>
           <div style="font-size: 14px; font-weight: 600; color: var(--text-secondary);">No raw files match query</div>
           <div style="font-size: 12px; margin-top: 4px;">Try searching for a different file extension, filename, or clearing language filters.</div>
         </div>

@@ -323,14 +323,38 @@
 
               <!-- Trending Velocity Radar Bar -->
               <div class="trending-radar-bar" role="toolbar" aria-label="Trending Velocity Radar Filters">
-                <span class="radar-title">⚡ RADAR:</span>
-                <button class="radar-pill active" data-filter="all" aria-label="Show All Repositories">🌐 All (2,500+)</button>
-                <button class="radar-pill" data-filter="legends" aria-label="Filter 100K+ Legend Repositories">🌟 100K+ Legends</button>
-                <button class="radar-pill" data-filter="ai" aria-label="Filter AI and LLM Repositories">🤖 AI & LLM Core</button>
-                <button class="radar-pill" data-filter="rust" aria-label="Filter Rust Repositories">🦀 Pure Rust</button>
-                <button class="radar-pill" data-filter="go" aria-label="Filter Go Repositories">🐹 Cloud Go</button>
-                <button class="radar-pill" data-filter="systems" aria-label="Filter Systems Repositories">⚡ Systems & OS</button>
-                <button class="radar-pill" data-filter="web" aria-label="Filter Web Repositories">🚀 Modern Web</button>
+                <span class="radar-title">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="vertical-align: -1px; margin-right: 2px;"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+                  RADAR:
+                </span>
+                <button class="radar-pill active" data-filter="all" aria-label="Show All Repositories">
+                  <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="radar-icon"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
+                  All (2,500+)
+                </button>
+                <button class="radar-pill" data-filter="legends" aria-label="Filter 100K+ Legend Repositories">
+                  <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor" stroke="none" class="radar-icon" style="color: #fbbf24;"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+                  100K+ Legends
+                </button>
+                <button class="radar-pill" data-filter="ai" aria-label="Filter AI and LLM Repositories">
+                  <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="radar-icon"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                  AI & LLM Core
+                </button>
+                <button class="radar-pill" data-filter="rust" aria-label="Filter Rust Repositories">
+                  <span class="lang-icon-badge rust-badge">RS</span>
+                  Pure Rust
+                </button>
+                <button class="radar-pill" data-filter="go" aria-label="Filter Go Repositories">
+                  <span class="lang-icon-badge go-badge">GO</span>
+                  Cloud Go
+                </button>
+                <button class="radar-pill" data-filter="systems" aria-label="Filter Systems Repositories">
+                  <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="radar-icon"><rect x="4" y="4" width="16" height="16" rx="2"></rect><rect x="9" y="9" width="6" height="6"></rect><line x1="9" y1="1" x2="9" y2="4"></line><line x1="15" y1="1" x2="15" y2="4"></line><line x1="9" y1="20" x2="9" y2="23"></line><line x1="15" y1="20" x2="15" y2="23"></line><line x1="20" y1="9" x2="23" y2="9"></line><line x1="20" y1="14" x2="23" y2="14"></line><line x1="1" y1="9" x2="4" y2="9"></line><line x1="1" y1="14" x2="4" y2="14"></line></svg>
+                  Systems & OS
+                </button>
+                <button class="radar-pill" data-filter="web" aria-label="Filter Web Repositories">
+                  <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="radar-icon"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg>
+                  Modern Web
+                </button>
               </div>
 
               <!-- Filter Operator Chips -->
@@ -581,8 +605,8 @@
             <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
               <label for="cluster-mode-select" class="sr-only">Cluster View Mode</label>
               <select id="cluster-mode-select" class="omni-select-mini" style="font-weight: 600;" aria-label="Select galaxy universe cluster view mode">
-                <option value="universe">🌌 Galaxy Universe (All 2,300+ Repos)</option>
-                <option value="repository">🏛️ Target Repository Architecture</option>
+                <option value="universe">Galaxy Universe (All 2,300+ Repos)</option>
+                <option value="repository">Target Repository Architecture</option>
               </select>
               <label for="graph-repo-select" class="sr-only">Select Target Repository</label>
               <select id="graph-repo-select" class="omni-select-mini" aria-label="Select target repository for architecture graph">
@@ -702,16 +726,16 @@
               <label for="rawfiles-lang-select" class="sr-only">Filter by language</label>
               <select id="rawfiles-lang-select" class="omni-select-mini" style="font-weight: 600;" aria-label="Filter raw files by language">
                 <option value="">All Languages</option>
-                <option value="Rust">Rust (🦀)</option>
-                <option value="Go">Go (🐹)</option>
-                <option value="TypeScript">TypeScript (TS)</option>
-                <option value="Python">Python (🐍)</option>
-                <option value="JavaScript">JavaScript (JS)</option>
-                <option value="C++">C++ (C++)</option>
-                <option value="C">C (C)</option>
-                <option value="Zig">Zig (⚡)</option>
-                <option value="Solidity">Solidity (💎)</option>
-                <option value="Markdown">Markdown (📝)</option>
+                <option value="Rust">Rust</option>
+                <option value="Go">Go</option>
+                <option value="TypeScript">TypeScript</option>
+                <option value="Python">Python</option>
+                <option value="JavaScript">JavaScript</option>
+                <option value="C++">C++</option>
+                <option value="C">C</option>
+                <option value="Zig">Zig</option>
+                <option value="Solidity">Solidity</option>
+                <option value="Markdown">Markdown</option>
               </select>
 
               <label for="rawfiles-repo-select" class="sr-only">Filter by repository</label>
