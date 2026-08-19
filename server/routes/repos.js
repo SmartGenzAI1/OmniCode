@@ -32,24 +32,32 @@ module.exports = function createReposRouter(indexStore, crawlerDaemon, ensureDbR
       page: result.page,
       limit: result.limit,
       totalPages: result.totalPages,
-      repositories: result.results.map(r => ({
-        id: r.id,
-        name: r.name,
-        fullName: r.fullName,
-        description: r.description,
-        primaryLanguage: r.primaryLanguage,
-        languages: r.languages,
-        domain: r.domain,
-        license: r.license,
-        stars: r.stars,
-        forks: r.forks,
-        healthScore: r.healthScore,
-        fileCount: r.fileCount,
-        totalSLOC: r.totalSLOC,
-        averageComplexity: r.averageComplexity,
-        sourceForge: r.sourceForge,
-        indexedAt: r.indexedAt
-      }))
+      repositories: result.results.map(r => {
+        const owner = (r.fullName && r.fullName.includes('/')) ? r.fullName.split('/')[0] : (r.name || 'repo');
+        return {
+          id: r.id,
+          name: r.name,
+          fullName: r.fullName,
+          owner: owner,
+          ownerAvatar: r.ownerAvatar || (r.sourceForge === 'GitLab' 
+            ? `https://gitlab.com/uploads/-/system/user/avatar/${encodeURIComponent(owner)}/avatar.png`
+            : `https://github.com/${encodeURIComponent(owner)}.png?size=72`),
+          gitUrl: r.gitUrl || `https://github.com/${r.fullName}.git`,
+          description: r.description,
+          primaryLanguage: r.primaryLanguage,
+          languages: r.languages,
+          domain: r.domain,
+          license: r.license,
+          stars: r.stars,
+          forks: r.forks,
+          healthScore: r.healthScore,
+          fileCount: r.fileCount,
+          totalSLOC: r.totalSLOC,
+          averageComplexity: r.averageComplexity,
+          sourceForge: r.sourceForge,
+          indexedAt: r.indexedAt
+        };
+      })
     });
   });
 

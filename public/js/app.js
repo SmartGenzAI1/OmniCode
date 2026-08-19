@@ -915,6 +915,10 @@ class OmniApp {
 
       const gitUrl = repo.gitUrl || `https://github.com/${repo.fullName}.git`;
       const webUrl = gitUrl.replace(/\.git$/, '');
+      const owner = (repo.fullName && repo.fullName.includes('/')) ? repo.fullName.split('/')[0] : (repo.name || 'repo');
+      const avatarUrl = repo.ownerAvatar || (repo.sourceForge === 'GitLab'
+        ? `https://gitlab.com/uploads/-/system/user/avatar/${encodeURIComponent(owner)}/avatar.png`
+        : `https://github.com/${encodeURIComponent(owner)}.png?size=72`);
 
       const languages = repo.languages || [{ name: repo.primaryLanguage || 'Other', percentage: 100 }];
       const meterBarsHtml = languages.map(l => {
@@ -929,19 +933,22 @@ class OmniApp {
 
       card.innerHTML = `
         <div class="repo-card-head">
-          <div class="repo-identity">
-            <a href="${webUrl}" target="_blank" rel="noopener noreferrer" class="repo-link" title="Open on GitHub" aria-label="Open ${repo.fullName} on GitHub">
-              <span>${repo.fullName.split('/')[0]} /</span>
-              <span class="repo-name-strong">${repo.name}</span>
-              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
-            </a>
-            <div class="repo-badges-row">
-              <span class="badge-forge">${repo.sourceForge || 'GitHub'}</span>
-              <span class="badge-domain">${repo.domain || 'Systems'}</span>
-              <span class="badge-license">${repo.license || 'MIT'}</span>
+          <div class="repo-identity-group">
+            <img src="${avatarUrl}" alt="${owner}" class="repo-owner-avatar" loading="lazy" decoding="async" width="36" height="36" onerror="this.onerror=null;this.src='assets/logo.jpg'">
+            <div class="repo-identity">
+              <a href="${webUrl}" target="_blank" rel="noopener noreferrer" class="repo-link" title="Open on GitHub" aria-label="Open ${repo.fullName} on GitHub">
+                <span class="repo-owner-prefix">${owner} /</span>
+                <span class="repo-name-strong">${repo.name}</span>
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+              </a>
+              <div class="repo-badges-row">
+                <span class="badge-forge">${repo.sourceForge || 'GitHub'}</span>
+                <span class="badge-domain">${repo.domain || 'Systems'}</span>
+                <span class="badge-license">${repo.license || 'MIT'}</span>
+              </div>
             </div>
           </div>
-          <div class="repo-health-tag" title="Architectural Health Score">
+          <div class="repo-health-tag" title="Architectural Health Score: ${repo.healthScore || 95}%">
             <span>${repo.healthScore || 95}%</span>
           </div>
         </div>
